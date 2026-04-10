@@ -36,6 +36,36 @@ function normalizeBase(value) {
 const BASE = normalizeBase(
   queryApiBase || runtimeApiBase || import.meta?.env?.VITE_API_URL || defaultApiBase()
 );
+const hasExplicitApiBase = Boolean(queryApiBase || runtimeApiBase || import.meta?.env?.VITE_API_URL);
+
+function isLocalHostname(hostname) {
+  return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "0.0.0.0";
+}
+
+function shouldBlockUnconfiguredProdOAuth(base) {
+  let appHost = "";
+  let apiHost = "";
+  let apiPort = "";
+
+  try {
+    appHost = window.location.hostname;
+  } catch {}
+
+  try {
+    const parsed = new URL(base);
+    apiHost = parsed.hostname;
+    apiPort = parsed.port;
+  } catch {
+    return false;
+  }
+
+  const runningLocally = isLocalHostname(appHost);
+  const apiLooksLocal = isLocalHostname(apiHost);
+  const defaultLocalPort = apiPort === "8000";
+
+  // On production hosts, default localhost-style API settings will never work.
+  return !runningLocally && !hasExplicitApiBase && (apiLooksLocal || defaultLocalPort);
+}
 
 function localFallbackBases(primaryBase) {
   let parsed;
@@ -216,7 +246,14 @@ export const api = {
     request("GET", `/api/portfolio/slug/suggestions?slug=${encodeURIComponent(slug)}`),
 
   /** OAuth redirect helpers (navigates away) */
-  loginGithub: () => { window.location.href = `${activeBase}/api/auth/github`; },
+  loginGithub: () => {
+    if (shouldBlockUnconfiguredProdOAuth(activeBase)) {
+      throw new Error(
+        "API base is not configured for production. Open this app using ?apiBase=<your-api-url> or set window.__PB_API_BASE__ in config.js."
+      );
+    }
+    window.location.href = `${activeBase}/api/auth/github`;
+  },
 
   /** Public URL helpers */
   publicOrigin: () => activeBaseOrigin(),

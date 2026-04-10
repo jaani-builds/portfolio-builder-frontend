@@ -6,6 +6,7 @@ export function renderLogin(app) {
       <div class="card">
         <div class="login-logo">Portfolio Builder</div>
         <p class="login-tagline">Turn your resume into a hosted portfolio in minutes.</p>
+        <div id="login-error" class="banner banner--error" style="display:none;margin-bottom:0.75rem;"></div>
 
         <div id="oauth-buttons">
           <button id="btn-github" class="btn btn--oauth" type="button">
@@ -19,5 +20,15 @@ export function renderLogin(app) {
     </div>
   `;
 
-  document.getElementById("btn-github").addEventListener("click", () => api.loginGithub());
+  document.getElementById("btn-github").addEventListener("click", () => {
+    const errorEl = document.getElementById("login-error");
+    try {
+      api.loginGithub();
+    } catch (err) {
+      if (errorEl) {
+        errorEl.textContent = err?.message || "Could not start GitHub sign in.";
+        errorEl.style.display = "block";
+      }
+    }
+  });
 }
