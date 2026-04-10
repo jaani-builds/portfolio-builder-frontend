@@ -236,7 +236,13 @@ export function renderSlugConfig(container, onPublished) {
   }).catch(() => {});
 
   function updatePreview() {
-    const v = slugInput.value.trim();
+    let v = slugInput.value.trim().toLowerCase();
+    // Auto-convert spaces to hyphens
+    v = v.replace(/\s+/g, '-');
+    // Collapse multiple consecutive hyphens into one
+    v = v.replace(/-+/g, '-');
+    // Strip leading/trailing hyphens
+    v = v.replace(/^-+|-+$/g, '');
     if (v.length >= 3) {
       const base = api.publicOrigin();
       previewEl.style.display = "block";
@@ -249,7 +255,13 @@ export function renderSlugConfig(container, onPublished) {
   slugInput.addEventListener("input", updatePreview);
 
   publishBtn.addEventListener("click", async () => {
-    const slug = slugInput.value.trim().toLowerCase();
+    let slug = slugInput.value.trim().toLowerCase();
+    // Auto-convert spaces to hyphens
+    slug = slug.replace(/\s+/g, '-');
+    // Collapse multiple consecutive hyphens into one
+    slug = slug.replace(/-+/g, '-');
+    // Strip leading/trailing hyphens
+    slug = slug.replace(/^-+|-+$/g, '');
     bannerEl.innerHTML = "";
     if (!slug) { bannerEl.innerHTML = `<div class="banner banner--error">Please enter a slug.</div>`; return; }
 
