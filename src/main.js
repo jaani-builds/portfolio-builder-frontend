@@ -39,6 +39,7 @@ function renderTopbar(user) {
     <nav class="topbar">
       <a class="topbar__brand" href="#/dashboard">Portfolio Builder</a>
       <div class="topbar__user">
+        <button id="btn-coffee" class="btn btn--accent-sm" title="Buy me a coffee">☕</button>
         ${user.avatar_url
           ? `<img class="topbar__avatar" src="${user.avatar_url}" alt="${user.name}" />`
           : ""}
@@ -46,6 +47,20 @@ function renderTopbar(user) {
         <button id="btn-signout" class="btn btn--ghost">Sign out</button>
       </div>
     </nav>
+    <div id="coffee-modal" class="modal modal--hidden">
+      <div class="modal__overlay"></div>
+      <div class="modal__content">
+        <div class="modal__header">
+          <h3>Buy me a coffee ☕</h3>
+          <button id="btn-close-modal" class="btn btn--ghost">✕</button>
+        </div>
+        <div class="modal__body">
+          <p>Support this project with a one-time payment via PayNow.</p>
+          <div id="qr-code" class="qr-code"></div>
+          <p class="modal__hint">Scan the QR with your Singapore banking app.</p>
+        </div>
+      </div>
+    </div>
   `;
 }
 
@@ -57,6 +72,47 @@ function attachSignOut() {
     navigate(ROUTES.login);
   });
 }
+
+function attachCoffeeButton() {
+  const coffeeBtn = document.getElementById("btn-coffee");
+  const modal = document.getElementById("coffee-modal");
+  const closeBtn = document.getElementById("btn-close-modal");
+  const overlay = modal?.querySelector(".modal__overlay");
+
+  coffeeBtn?.addEventListener("click", () => {
+    modal?.classList.remove("modal--hidden");
+    generatePayNowQR();
+  });
+
+  closeBtn?.addEventListener("click", () => {
+    modal?.classList.add("modal--hidden");
+  });
+
+  overlay?.addEventListener("click", () => {
+    modal?.classList.add("modal--hidden");
+  });
+}
+
+function generatePayNowQR() {
+  const qrContainer = document.getElementById("qr-code");
+  if (!qrContainer || qrContainer.hasChildNodes()) return;
+
+  const payNowId = window.__PAYNOW_ID__;
+  if (!payNowId || payNowId === "0123456789012") {
+    qrContainer.innerHTML = `<p class="modal__error">⚠️ PayNow ID not configured. Please update config.js</p>`;
+    return;
+  }
+
+  // Generate PayNow QR static URL using SGQR standard
+  // Dynamic QR: https://www.paypal.com/myaccount/transfer/send/
+  // PayNow static: Fetch from NETS or generate client-side
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(payNowId)}`;
+
+  qrContainer.innerHTML = `
+    <img src="${qrUrl}" alt="PayNow QR Code" class="qr-image" />
+  `;
+}
+
 
 // ── Secure exchange-code callback ─────────────────────────────────────────
 // OAuth callback redirects to #/callback?code=<one-time-30s-code>.
@@ -175,6 +231,7 @@ async function renderDashboard(path) {
     `;
 
     attachSignOut();
+    attachCoffeeButton();
     document.getElementById("btn-home-workflow")?.addEventListener("click", () => navigate(ROUTES.upload));
     return;
   }
@@ -194,6 +251,7 @@ async function renderDashboard(path) {
   `;
 
   attachSignOut();
+  attachCoffeeButton();
 
   // Step navigation
   app.querySelectorAll(".step").forEach((btn) => {

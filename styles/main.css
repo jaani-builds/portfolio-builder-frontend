@@ -451,6 +451,110 @@ details summary:hover {
   color: var(--text);
 }
 
+/* ── Coffee Button & Modal ─────────────────────────────────────────────────── */
+.btn--accent-sm {
+  background: rgba(94, 179, 255, 0.15);
+  color: var(--accent);
+  border: 1px solid rgba(94, 179, 255, 0.3);
+  padding: .5rem .75rem;
+  font-size: 1rem;
+}
+.btn--accent-sm:hover {
+  background: rgba(94, 179, 255, 0.25);
+  border-color: var(--accent);
+  text-decoration: none;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  transition: opacity .2s;
+}
+
+.modal--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.modal__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+}
+
+.modal__content {
+  position: relative;
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-strong) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  animation: slideUp .25s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.modal__header h3 {
+  margin: 0;
+}
+
+.modal__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.modal__body p {
+  text-align: center;
+  margin: 0;
+}
+
+.modal__hint {
+  font-size: .85rem;
+  color: var(--text-muted);
+}
+
+.modal__error {
+  color: var(--danger);
+  font-size: .9rem;
+}
+
+.qr-code {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  min-height: 320px;
+}
+
+.qr-image {
+  max-width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
 /* ── Responsive ───────────────────────────────────────────────────────────── */
 @media (max-width: 600px) {
   .card { padding: 1.75rem 1.25rem; }
