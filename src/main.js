@@ -58,12 +58,6 @@ function renderTopbar(user) {
           <div id="qr-code" class="qr-code"></div>
           <p class="modal__hint">Scan the QR with your Singapore banking app (PayNow).</p>
           <p id="payee-verify" class="payee-verify" style="display:none;"></p>
-          <div class="support-log">
-            <label for="support-amount" class="form-label">Amount paid (SGD)</label>
-            <input id="support-amount" type="number" min="1" step="0.01" placeholder="5.00" />
-            <button id="btn-log-support" class="btn btn--secondary" type="button">I've paid</button>
-            <p id="support-log-msg" class="modal__hint"></p>
-          </div>
         </div>
       </div>
     </div>
@@ -83,10 +77,7 @@ function attachCoffeeButton() {
   const modal = document.getElementById("coffee-modal");
   const closeBtn = document.getElementById("btn-close-modal");
   const overlay = modal?.querySelector(".modal__overlay");
-  const logBtn = document.getElementById("btn-log-support");
-  const logMsg = document.getElementById("support-log-msg");
   const thankYou = document.getElementById("modal-thankyou");
-  const amountInput = document.getElementById("support-amount");
 
   app.querySelectorAll('[data-support-trigger="true"], #btn-support-topbar').forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -102,29 +93,6 @@ function attachCoffeeButton() {
 
   overlay?.addEventListener("click", () => {
     modal?.classList.add("modal--hidden");
-  });
-
-  logBtn?.addEventListener("click", async () => {
-    const amount = Number(amountInput?.value || 0);
-    if (!amount || amount <= 0) {
-      if (logMsg) logMsg.textContent = "Enter a valid amount first.";
-      return;
-    }
-
-    logBtn.disabled = true;
-    logBtn.textContent = "Saving…";
-    if (logMsg) logMsg.textContent = "";
-
-    try {
-      await api.logPaynowSupport(amount, "SGD");
-      if (logMsg) logMsg.textContent = "Thanks! Your support was noted.";
-      if (amountInput) amountInput.value = "";
-    } catch (err) {
-      if (logMsg) logMsg.textContent = err?.message || "Could not save support log.";
-    } finally {
-      logBtn.disabled = false;
-      logBtn.textContent = "I've paid";
-    }
   });
 }
 

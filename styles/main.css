@@ -147,6 +147,21 @@ h1, h2, h3 { color: var(--text); }
 .form-label { display: block; font-weight: 600; margin-bottom: .35rem; font-size: .92rem; }
 .form-hint  { font-size: .82rem; color: var(--text-muted); margin-top: .3rem; }
 
+.file-input--hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.file-pick-btn {
+  display: inline-flex;
+}
+
 textarea,
 input[type="text"],
 input[type="url"],
@@ -682,6 +697,21 @@ details summary:hover {
   margin: 1rem 0 1.2rem;
 }
 
+.parse-actions {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-top: .25rem;
+  flex-wrap: wrap;
+}
+
+.publish-actions {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
 /* ── Accordion sections ─────────────────────────────────────────────────── */
 .acc {
   border: 1px solid var(--border);
@@ -804,6 +834,29 @@ details[open] > .acc__hd::after { transform: rotate(90deg); }
   .support-panel { padding: .95rem 1rem; }
   .support-inline { justify-content: flex-start; }
   .flow-shell { padding: 1.1rem; }
+
+  .parse-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: .6rem;
+  }
+
+  .parse-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .publish-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: .6rem;
+  }
+
+  .publish-actions .btn {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
 
   .modal {
     align-items: flex-start;

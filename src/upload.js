@@ -111,9 +111,12 @@ export function renderUpload(container, onParsed) {
         <label class="form-label" for="resume-file">Resume file</label>
         <input
           id="resume-file"
+          class="file-input--hidden"
           type="file"
           accept="application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx,application/msword,.doc"
         />
+        <label for="resume-file" class="btn btn--secondary file-pick-btn">Choose file</label>
+        <div id="picked-file-name" class="form-hint" style="margin-top:.45rem;">No file selected</div>
         <p class="form-hint">Supported: PDF and Word (.docx). Legacy .doc support depends on extracted text availability.</p>
         <div id="file-status" class="form-hint" style="margin-top:.5rem;"></div>
       </div>
@@ -192,8 +195,10 @@ export function renderUpload(container, onParsed) {
           </details>
 
         </div>
-        <button id="btn-accept" class="btn btn--primary">Confirm categories &amp; continue</button>
-        <button id="btn-reparse" class="btn btn--secondary" style="margin-left:.5rem;">Re-upload</button>
+        <div class="parse-actions">
+          <button id="btn-accept" class="btn btn--primary">Confirm categories &amp; continue</button>
+          <button id="btn-reparse" class="btn btn--secondary">Re-upload</button>
+        </div>
       </div>
     </div>
   `;
@@ -202,6 +207,7 @@ export function renderUpload(container, onParsed) {
   const resultEl = container.querySelector("#parse-result");
   const parseBtn = container.querySelector("#btn-parse");
   const resumeFileInput = container.querySelector("#resume-file");
+  const pickedFileNameEl = container.querySelector("#picked-file-name");
   const fileStatusEl = container.querySelector("#file-status");
   const editorBasics = container.querySelector("#editor-basics");
   const editorSummary = container.querySelector("#editor-summary");
@@ -234,6 +240,13 @@ export function renderUpload(container, onParsed) {
   function showBanner(msg, type = "error") {
     bannerEl.innerHTML = `<div class="banner banner--${type}">${escapeHtml(msg)}</div>`;
   }
+
+  resumeFileInput?.addEventListener("change", () => {
+    const selected = resumeFileInput.files?.[0]?.name;
+    if (pickedFileNameEl) {
+      pickedFileNameEl.textContent = selected ? `Selected: ${selected}` : "No file selected";
+    }
+  });
 
   parseBtn.addEventListener("click", async () => {
     const resumeFile = resumeFileInput.files?.[0];
@@ -272,7 +285,7 @@ export function renderUpload(container, onParsed) {
       editorSkills.value = formatSection(parsed.skills || {});
       editorCertifications.value = formatSection(parsed.certifications || []);
 
-      // Update accordion open state + badges
+      // Keep all categories collapsed by default. Badges still surface parse quality.
       const expLen = (parsed.experience || []).length;
       const eduLen = (parsed.education || []).length;
       const skillGroups = Object.keys(parsed.skills || {}).length;
@@ -280,22 +293,22 @@ export function renderUpload(container, onParsed) {
       const hasBasics = !!(parsed.basics?.name || parsed.basics?.email);
       const hasSummary = !!(parsed.summary || "").trim();
 
-      setAccordion("acc-basics", "badge-basics", true,
+      setAccordion("acc-basics", "badge-basics", false,
         hasBasics ? (parsed.basics.name || "Filled") : "Empty — fill in",
         !hasBasics);
-      setAccordion("acc-summary", "badge-summary", hasSummary,
+      setAccordion("acc-summary", "badge-summary", false,
         hasSummary ? `${(parsed.summary || "").split(/\s+/).filter(Boolean).length} words` : "Empty — fill in",
         !hasSummary);
-      setAccordion("acc-experience", "badge-experience", expLen > 0,
+      setAccordion("acc-experience", "badge-experience", false,
         expLen > 0 ? `${expLen} role${expLen === 1 ? "" : "s"}` : "Empty — fill in",
         expLen === 0);
-      setAccordion("acc-education", "badge-education", eduLen > 0,
+      setAccordion("acc-education", "badge-education", false,
         eduLen > 0 ? `${eduLen} entr${eduLen === 1 ? "y" : "ies"}` : "Empty — fill in",
         eduLen === 0);
-      setAccordion("acc-skills", "badge-skills", skillGroups > 0,
+      setAccordion("acc-skills", "badge-skills", false,
         skillGroups > 0 ? `${skillGroups} group${skillGroups === 1 ? "" : "s"}` : "Empty — fill in",
         skillGroups === 0);
-      setAccordion("acc-certifications", "badge-certifications", certLen > 0,
+      setAccordion("acc-certifications", "badge-certifications", false,
         certLen > 0 ? `${certLen} item${certLen === 1 ? "" : "s"}` : "Empty — fill in",
         certLen === 0);
 
@@ -338,6 +351,7 @@ export function renderUpload(container, onParsed) {
     resultEl.style.display = "none";
     parseBtn.style.display = "";
     if (resumeFileInput) resumeFileInput.value = "";
+    if (pickedFileNameEl) pickedFileNameEl.textContent = "No file selected";
     pdfUploadedThisCycle = false;
     bannerEl.innerHTML = "";
     fileStatusEl.innerHTML = existingPdfUrl ? renderPdfStatus(existingPdfUrl, "Current PDF") : "";
@@ -492,11 +506,11 @@ export function renderPublished(container, slug, url, actions = {}) {
         <strong><a href="${escUrl}" target="_blank" rel="noopener">${escUrl}</a></strong>
       </div>
 
-      <a href="${escUrl}" target="_blank" rel="noopener" class="btn btn--primary" style="margin-right:.5rem;">
-        Open portfolio
-      </a>
-      <button id="btn-update-slug" class="btn btn--secondary">Change username</button>
-      <button id="btn-upload-again" class="btn btn--secondary" style="margin-left:.5rem;">Upload new resume</button>
+      <div class="publish-actions">
+        <a href="${escUrl}" target="_blank" rel="noopener" class="btn btn--primary">Open portfolio</a>
+        <button id="btn-update-slug" class="btn btn--secondary">Change username</button>
+        <button id="btn-upload-again" class="btn btn--secondary">Upload new resume</button>
+      </div>
     </div>
   `;
 
