@@ -442,6 +442,11 @@ textarea.code {
 .login-divider::before,
 .login-divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
 
+.login-stack {
+  width: 100%;
+  max-width: 440px;
+}
+
 .sample-output {
   display: block;
   margin-top: 1rem;
@@ -478,6 +483,10 @@ textarea.code {
   display: block;
   color: var(--text-muted);
   font-size: .86rem;
+}
+
+.sample-output--panel {
+  margin-top: .85rem;
 }
 
 #parse-result pre {
