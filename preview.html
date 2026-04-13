@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portfolio Preview</title>
+    <meta name="description" content="Preview a portfolio rendered from resume JSON." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Libre+Baskerville:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/main.css" />
+    <style>
+      .preview-wrap { max-width: 980px; margin: 2rem auto; padding: 0 1rem 3rem; }
+      .preview-card { border: 1px solid var(--border); border-radius: var(--radius); background: linear-gradient(135deg, var(--surface) 0%, var(--surface-strong) 100%); padding: 1.25rem; margin-bottom: 1rem; }
+      .preview-head { display: flex; justify-content: space-between; align-items: start; gap: 1rem; margin-bottom: 1rem; }
+      .preview-name { margin-bottom: .25rem; }
+      .preview-role { color: var(--text-muted); }
+      .preview-links { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: .6rem; }
+      .preview-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+      .kv { display: grid; grid-template-columns: 120px 1fr; gap: .25rem .75rem; font-size: .92rem; }
+      .kv dt { color: var(--text-muted); font-weight: 700; }
+      .kv dd { color: var(--text); word-break: break-word; }
+      .role-item { border: 1px solid var(--border); border-radius: var(--radius); padding: .85rem; background: rgba(255,255,255,0.02); margin-bottom: .65rem; }
+      .role-top { display: flex; justify-content: space-between; gap: .65rem; flex-wrap: wrap; }
+      .muted-small { color: var(--text-muted); font-size: .86rem; }
+      ul.inline-list { margin-left: 1rem; }
+      @media (max-width: 760px) {
+        .preview-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <p class="loading">Loading preview…</p>
+    </div>
+    <script type="module" src="src/preview.js"></script>
+  </body>
+</html>
