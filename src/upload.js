@@ -53,6 +53,11 @@ function renderParsedSummary(data) {
   `;
 }
 
+function renderPdfStatus(url, prefix = "PDF attached") {
+  if (!url) return "";
+  return `${escapeHtml(prefix)}: <a href="${escapeHtml(url)}" target="_blank" rel="noopener">View PDF</a>`;
+}
+
 export function renderUpload(container, onParsed) {
   container.innerHTML = `
     <div class="flow-shell">
@@ -118,7 +123,7 @@ export function renderUpload(container, onParsed) {
   api.getResume().then((resume) => {
     if (resume?.pdfUrl) {
       existingPdfUrl = normalizePdfUrl(resume.pdfUrl);
-      pdfStatusEl.innerHTML = `Current PDF link: <a href="${escapeHtml(existingPdfUrl)}" target="_blank" rel="noopener">${escapeHtml(existingPdfUrl)}</a>`;
+      pdfStatusEl.innerHTML = renderPdfStatus(existingPdfUrl, "Current PDF");
     }
   }).catch(() => {});
 
@@ -168,7 +173,7 @@ export function renderUpload(container, onParsed) {
         existingPdfUrl = pdfUrl;
         pdfUploadedThisCycle = true;
         pdfFileInput.value = "";
-        pdfStatusEl.innerHTML = `PDF uploaded: <a href="${escapeHtml(pdfUrl)}" target="_blank" rel="noopener">${escapeHtml(pdfUrl)}</a>`;
+        pdfStatusEl.innerHTML = renderPdfStatus(pdfUrl, "PDF uploaded");
       }
 
       parsed.pdfUrl = pdfUrl;
@@ -200,7 +205,7 @@ export function renderUpload(container, onParsed) {
         parsedResume.pdfUrl = existingPdfUrl;
         pdfUploadedThisCycle = true;
         pdfFileInput.value = "";
-        pdfStatusEl.innerHTML = `PDF uploaded: <a href="${escapeHtml(existingPdfUrl)}" target="_blank" rel="noopener">${escapeHtml(existingPdfUrl)}</a>`;
+        pdfStatusEl.innerHTML = renderPdfStatus(existingPdfUrl, "PDF uploaded");
         await api.updateResumeJson(parsedResume);
       } else if ((parsedResume.pdfUrl || "") !== existingPdfUrl) {
         parsedResume.pdfUrl = existingPdfUrl;
