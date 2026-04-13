@@ -121,39 +121,77 @@ export function renderUpload(container, onParsed) {
       <button id="btn-parse" class="btn btn--primary">Extract &amp; Parse Resume</button>
 
       <div id="parse-result" style="margin-top:2rem;display:none;">
-        <h3>Validate Parsed Categories</h3>
-        <p class="form-hint" style="margin-bottom:1rem;">Review and edit each section based on the template before continuing to publish.</p>
-        <div id="parsed-summary"></div>
+        <h3>Review &amp; Edit Categories</h3>
+        <p class="form-hint" style="margin-bottom:1rem;">Open each section to review what was detected. Empty sections are collapsed — tap to open and fill in manually.</p>
         <div class="category-editor">
-          <div class="category-editor__section">
-            <label class="form-label" for="editor-basics">Basics (JSON object)</label>
-            <textarea id="editor-basics" class="code" rows="8" spellcheck="false"></textarea>
-          </div>
-          <div class="category-editor__section">
-            <label class="form-label" for="editor-summary">Summary</label>
-            <textarea id="editor-summary" class="code" rows="5" spellcheck="false"></textarea>
-          </div>
-          <div class="category-editor__section">
-            <label class="form-label" for="editor-experience">Experience (JSON array)</label>
-            <textarea id="editor-experience" class="code" rows="9" spellcheck="false"></textarea>
-          </div>
-          <div class="category-editor__section">
-            <label class="form-label" for="editor-education">Education (JSON array)</label>
-            <textarea id="editor-education" class="code" rows="7" spellcheck="false"></textarea>
-          </div>
-          <div class="category-editor__section">
-            <label class="form-label" for="editor-skills">Skills (JSON object)</label>
-            <textarea id="editor-skills" class="code" rows="8" spellcheck="false"></textarea>
-          </div>
-          <div class="category-editor__section">
-            <label class="form-label" for="editor-certifications">Certifications (JSON array)</label>
-            <textarea id="editor-certifications" class="code" rows="6" spellcheck="false"></textarea>
-          </div>
+
+          <details class="acc" id="acc-basics">
+            <summary class="acc__hd">
+              <span class="acc__title">Basics</span>
+              <span class="acc__badge" id="badge-basics">—</span>
+            </summary>
+            <div class="acc__body">
+              <p class="form-hint">Name, title, contact details and social links. JSON object.</p>
+              <textarea id="editor-basics" class="code" rows="10" spellcheck="false"></textarea>
+            </div>
+          </details>
+
+          <details class="acc" id="acc-summary">
+            <summary class="acc__hd">
+              <span class="acc__title">Summary</span>
+              <span class="acc__badge" id="badge-summary">—</span>
+            </summary>
+            <div class="acc__body">
+              <p class="form-hint">A short professional summary paragraph (plain text).</p>
+              <textarea id="editor-summary" class="code" rows="4" spellcheck="false"></textarea>
+            </div>
+          </details>
+
+          <details class="acc" id="acc-experience">
+            <summary class="acc__hd">
+              <span class="acc__title">Experience</span>
+              <span class="acc__badge" id="badge-experience">—</span>
+            </summary>
+            <div class="acc__body">
+              <p class="form-hint">Array of roles — title, company, location, start, end, highlights.</p>
+              <textarea id="editor-experience" class="code" rows="10" spellcheck="false"></textarea>
+            </div>
+          </details>
+
+          <details class="acc" id="acc-education">
+            <summary class="acc__hd">
+              <span class="acc__title">Education</span>
+              <span class="acc__badge" id="badge-education">—</span>
+            </summary>
+            <div class="acc__body">
+              <p class="form-hint">Array of degrees — degree, school, start, end.</p>
+              <textarea id="editor-education" class="code" rows="7" spellcheck="false"></textarea>
+            </div>
+          </details>
+
+          <details class="acc" id="acc-skills">
+            <summary class="acc__hd">
+              <span class="acc__title">Skills</span>
+              <span class="acc__badge" id="badge-skills">—</span>
+            </summary>
+            <div class="acc__body">
+              <p class="form-hint">JSON object — category names as keys, arrays of skills as values.</p>
+              <textarea id="editor-skills" class="code" rows="8" spellcheck="false"></textarea>
+            </div>
+          </details>
+
+          <details class="acc" id="acc-certifications">
+            <summary class="acc__hd">
+              <span class="acc__title">Certifications</span>
+              <span class="acc__badge" id="badge-certifications">—</span>
+            </summary>
+            <div class="acc__body">
+              <p class="form-hint">JSON array of certification strings.</p>
+              <textarea id="editor-certifications" class="code" rows="5" spellcheck="false"></textarea>
+            </div>
+          </details>
+
         </div>
-        <details style="margin-bottom:1.25rem;">
-          <summary style="cursor:pointer;font-size:.88rem;color:var(--text-muted);">View full JSON</summary>
-          <pre id="parsed-json" style="margin-top:.5rem;font-size:.78rem;background:#1e1e1e;color:#d4d4d4;padding:1rem;border-radius:8px;overflow:auto;max-height:400px;"></pre>
-        </details>
         <button id="btn-accept" class="btn btn--primary">Confirm categories &amp; continue</button>
         <button id="btn-reparse" class="btn btn--secondary" style="margin-left:.5rem;">Re-upload</button>
       </div>
@@ -162,8 +200,6 @@ export function renderUpload(container, onParsed) {
 
   const bannerEl = container.querySelector("#upload-banner");
   const resultEl = container.querySelector("#parse-result");
-  const summaryEl = container.querySelector("#parsed-summary");
-  const jsonEl = container.querySelector("#parsed-json");
   const parseBtn = container.querySelector("#btn-parse");
   const resumeFileInput = container.querySelector("#resume-file");
   const fileStatusEl = container.querySelector("#file-status");
@@ -173,6 +209,16 @@ export function renderUpload(container, onParsed) {
   const editorEducation = container.querySelector("#editor-education");
   const editorSkills = container.querySelector("#editor-skills");
   const editorCertifications = container.querySelector("#editor-certifications");
+
+  function setAccordion(id, badgeId, open, badgeText, isEmpty) {
+    const el = container.querySelector(`#${id}`);
+    const badge = container.querySelector(`#${badgeId}`);
+    if (el) el.open = open;
+    if (badge) {
+      badge.textContent = badgeText;
+      badge.classList.toggle("acc__badge--empty", !!isEmpty);
+    }
+  }
 
   let parsedResume = null;
   let existingPdfUrl = "";
@@ -218,7 +264,6 @@ export function renderUpload(container, onParsed) {
       parsed.pdfUrl = pdfUrl;
       await api.updateResumeJson(parsed);
       parsedResume = parsed;
-      summaryEl.innerHTML = renderParsedSummary(parsed);
 
       editorBasics.value = formatSection(parsed.basics || {});
       editorSummary.value = formatSection(parsed.summary || "");
@@ -227,10 +272,36 @@ export function renderUpload(container, onParsed) {
       editorSkills.value = formatSection(parsed.skills || {});
       editorCertifications.value = formatSection(parsed.certifications || []);
 
-      jsonEl.textContent = JSON.stringify(parsed, null, 2);
+      // Update accordion open state + badges
+      const expLen = (parsed.experience || []).length;
+      const eduLen = (parsed.education || []).length;
+      const skillGroups = Object.keys(parsed.skills || {}).length;
+      const certLen = (parsed.certifications || []).length;
+      const hasBasics = !!(parsed.basics?.name || parsed.basics?.email);
+      const hasSummary = !!(parsed.summary || "").trim();
+
+      setAccordion("acc-basics", "badge-basics", true,
+        hasBasics ? (parsed.basics.name || "Filled") : "Empty — fill in",
+        !hasBasics);
+      setAccordion("acc-summary", "badge-summary", hasSummary,
+        hasSummary ? `${(parsed.summary || "").split(/\s+/).filter(Boolean).length} words` : "Empty — fill in",
+        !hasSummary);
+      setAccordion("acc-experience", "badge-experience", expLen > 0,
+        expLen > 0 ? `${expLen} role${expLen === 1 ? "" : "s"}` : "Empty — fill in",
+        expLen === 0);
+      setAccordion("acc-education", "badge-education", eduLen > 0,
+        eduLen > 0 ? `${eduLen} entr${eduLen === 1 ? "y" : "ies"}` : "Empty — fill in",
+        eduLen === 0);
+      setAccordion("acc-skills", "badge-skills", skillGroups > 0,
+        skillGroups > 0 ? `${skillGroups} group${skillGroups === 1 ? "" : "s"}` : "Empty — fill in",
+        skillGroups === 0);
+      setAccordion("acc-certifications", "badge-certifications", certLen > 0,
+        certLen > 0 ? `${certLen} item${certLen === 1 ? "" : "s"}` : "Empty — fill in",
+        certLen === 0);
+
       resultEl.style.display = "block";
       parseBtn.style.display = "none";
-      showBanner("Resume parsed into template categories. Review and confirm.", "success");
+      showBanner("Resume parsed. Review each section and confirm.", "success");
     } catch (err) {
       showBanner(err.message);
     } finally {

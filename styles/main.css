@@ -168,10 +168,12 @@ input:focus { outline: none; border-color: var(--accent); background: #111a27; }
 textarea.code {
   font-family: "SFMono-Regular", Consolas, monospace;
   font-size: .82rem;
-  min-height: 300px;
+  min-height: unset;
   background: #1e1e1e;
   color: #d4d4d4;
   border-color: #444;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* ── Steps ────────────────────────────────────────────────────────────────── */
@@ -674,10 +676,87 @@ details summary:hover {
 }
 
 .category-editor {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: .9rem;
+  display: flex;
+  flex-direction: column;
+  gap: .45rem;
   margin: 1rem 0 1.2rem;
+}
+
+/* ── Accordion sections ─────────────────────────────────────────────────── */
+.acc {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: rgba(255,255,255,0.01);
+}
+
+.acc__hd {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  padding: .85rem 1rem;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  font-weight: 600;
+  font-size: .9rem;
+  color: var(--text);
+  background: rgba(255,255,255,0.025);
+  transition: background .15s;
+  min-height: 48px; /* comfortable touch target */
+}
+.acc__hd::-webkit-details-marker { display: none; }
+.acc__hd:hover { background: rgba(94, 179, 255, 0.07); }
+.acc__hd::after {
+  content: "▸";
+  font-size: .7rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  margin-left: auto;
+  transition: transform .2s;
+}
+details[open] > .acc__hd::after { transform: rotate(90deg); }
+
+.acc__title { flex: 1; }
+
+.acc__badge {
+  font-size: .74rem;
+  font-weight: 500;
+  color: var(--accent);
+  background: rgba(94, 179, 255, 0.12);
+  border: 1px solid rgba(94, 179, 255, 0.25);
+  border-radius: 99px;
+  padding: .18rem .6rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.acc__badge--empty {
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.1);
+}
+
+.acc__body {
+  padding: .75rem;
+  border-top: 1px solid var(--border);
+}
+.acc__body .form-hint {
+  font-size: .82rem;
+  margin-bottom: .5rem;
+}
+.acc__body textarea {
+  font-size: 14px; /* explicit so mobile doesn't zoom */
+}
+
+@media (max-width: 640px) {
+  .acc__body textarea {
+    font-size: 16px; /* prevent iOS auto-zoom on focus */
+    rows: auto;
+  }
+  .acc__hd {
+    padding: 1rem;
+    font-size: .88rem;
+  }
 }
 
 .category-editor__section {
