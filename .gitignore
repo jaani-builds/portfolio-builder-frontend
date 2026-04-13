@@ -4,3 +4,6 @@
 !.dev.vars.example
 .env*
 !.env.example
+
+# macOS metadata
+.DS_Store
