@@ -267,6 +267,10 @@ export const api = {
   getSlugSuggestions: (slug) =>
     request("GET", `/api/portfolio/slug/suggestions?slug=${encodeURIComponent(slug)}`),
 
+  /** Support / payments (PayNow MVP) */
+  logPaynowSupport: (amount, currency = "SGD") =>
+    request("POST", "/api/payments/log", { amount, currency }),
+
   /** OAuth redirect helpers (navigates away) */
   loginGithub: () => {
     if (shouldBlockUnconfiguredProdOAuth(activeBase)) {
