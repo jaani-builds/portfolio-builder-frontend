@@ -1,3 +1,5 @@
+import { api } from "./api.js";
+
 export function renderLogin(app) {
   app.innerHTML = `
     <div class="page-center">
