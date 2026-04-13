@@ -1,7 +1,7 @@
 import { api } from "./api.js";
 
 export function renderLogin(app) {
-  const sampleUrl = "https://portfolio.handytools.work/danielkim";
+  const sampleUrl = "https://portfolio.handytools.work/danielkim/";
 
   app.innerHTML = `
     <div class="page-center">
@@ -23,7 +23,7 @@ export function renderLogin(app) {
 
         <a class="sample-output sample-output--panel" href="${sampleUrl}" target="_blank" rel="noopener">
           <span class="sample-output__badge">Live example</span>
-          <span class="sample-output__title">Daniel Kim Portfolio</span>
+          <span class="sample-output__title">Daniel Kim's Portfolio</span>
           <span class="sample-output__meta">A real portfolio published with this builder ↗</span>
         </a>
       </div>
