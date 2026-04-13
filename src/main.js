@@ -259,12 +259,14 @@ async function renderDashboard(path) {
               <a href="${liveUrl}" target="_blank" rel="noopener">${liveUrl}</a>
             </div>
           ` : ""}
-
-          <div class="support-cta">
-            <p>Like this tool? Support ongoing development if you'd like.</p>
-            <button class="btn btn--secondary" data-support-trigger="true">Support this project</button>
-          </div>
         </div>
+
+        <aside class="support-panel" aria-label="Support this project">
+          <p class="support-panel__kicker">💛 Support</p>
+          <h3>Like this tool?</h3>
+          <p>If it helped you today, you can buy me a coffee via PayNow.</p>
+          <button class="btn btn--secondary" data-support-trigger="true">Support this project ☕</button>
+        </aside>
       </div>
     `;
 
