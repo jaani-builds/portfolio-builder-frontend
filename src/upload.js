@@ -58,6 +58,47 @@ function renderPdfStatus(url, prefix = "PDF attached") {
   return `${escapeHtml(prefix)}: <a href="${escapeHtml(url)}" target="_blank" rel="noopener">View PDF</a>`;
 }
 
+function formatSection(value) {
+  if (value === undefined || value === null) return "";
+  if (typeof value === "string") return value;
+  return JSON.stringify(value, null, 2);
+}
+
+function parseJsonSection(raw, sectionName) {
+  const text = (raw || "").trim();
+  if (!text) {
+    if (sectionName === "skills") return {};
+    return [];
+  }
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error(`Invalid JSON in ${sectionName}. Please fix formatting and try again.`);
+  }
+}
+
+function buildResumeFromEditor(parsedResume, existingPdfUrl, container) {
+  const basicsText = container.querySelector("#editor-basics")?.value || "{}";
+  const summaryText = container.querySelector("#editor-summary")?.value || "";
+  const experienceText = container.querySelector("#editor-experience")?.value || "[]";
+  const educationText = container.querySelector("#editor-education")?.value || "[]";
+  const skillsText = container.querySelector("#editor-skills")?.value || "{}";
+  const certsText = container.querySelector("#editor-certifications")?.value || "[]";
+
+  const updated = {
+    ...parsedResume,
+    basics: parseJsonSection(basicsText, "basics"),
+    summary: summaryText.trim(),
+    experience: parseJsonSection(experienceText, "experience"),
+    education: parseJsonSection(educationText, "education"),
+    skills: parseJsonSection(skillsText, "skills"),
+    certifications: parseJsonSection(certsText, "certifications"),
+    pdfUrl: existingPdfUrl || parsedResume.pdfUrl || "",
+  };
+
+  return updated;
+}
+
 export function renderUpload(container, onParsed) {
   container.innerHTML = `
     <div class="flow-shell">
@@ -94,13 +135,40 @@ export function renderUpload(container, onParsed) {
       <button id="btn-parse" class="btn btn--primary">Parse Resume</button>
 
       <div id="parse-result" style="margin-top:2rem;display:none;">
-        <h3>Parsed fields</h3>
+        <h3>Validate Parsed Categories</h3>
+        <p class="form-hint" style="margin-bottom:1rem;">Review and edit each section based on the template before continuing to publish.</p>
         <div id="parsed-summary"></div>
+        <div class="category-editor">
+          <div class="category-editor__section">
+            <label class="form-label" for="editor-basics">Basics (JSON object)</label>
+            <textarea id="editor-basics" class="code" rows="8" spellcheck="false"></textarea>
+          </div>
+          <div class="category-editor__section">
+            <label class="form-label" for="editor-summary">Summary</label>
+            <textarea id="editor-summary" class="code" rows="5" spellcheck="false"></textarea>
+          </div>
+          <div class="category-editor__section">
+            <label class="form-label" for="editor-experience">Experience (JSON array)</label>
+            <textarea id="editor-experience" class="code" rows="9" spellcheck="false"></textarea>
+          </div>
+          <div class="category-editor__section">
+            <label class="form-label" for="editor-education">Education (JSON array)</label>
+            <textarea id="editor-education" class="code" rows="7" spellcheck="false"></textarea>
+          </div>
+          <div class="category-editor__section">
+            <label class="form-label" for="editor-skills">Skills (JSON object)</label>
+            <textarea id="editor-skills" class="code" rows="8" spellcheck="false"></textarea>
+          </div>
+          <div class="category-editor__section">
+            <label class="form-label" for="editor-certifications">Certifications (JSON array)</label>
+            <textarea id="editor-certifications" class="code" rows="6" spellcheck="false"></textarea>
+          </div>
+        </div>
         <details style="margin-bottom:1.25rem;">
           <summary style="cursor:pointer;font-size:.88rem;color:var(--text-muted);">View full JSON</summary>
           <pre id="parsed-json" style="margin-top:.5rem;font-size:.78rem;background:#1e1e1e;color:#d4d4d4;padding:1rem;border-radius:8px;overflow:auto;max-height:400px;"></pre>
         </details>
-        <button id="btn-accept" class="btn btn--primary">Looks good — next step</button>
+        <button id="btn-accept" class="btn btn--primary">Confirm categories &amp; continue</button>
         <button id="btn-reparse" class="btn btn--secondary" style="margin-left:.5rem;">Re-upload</button>
       </div>
     </div>
@@ -115,6 +183,12 @@ export function renderUpload(container, onParsed) {
   const textarea = container.querySelector("#resume-text");
   const pdfFileInput = container.querySelector("#pdf-file");
   const pdfStatusEl = container.querySelector("#pdf-status");
+  const editorBasics = container.querySelector("#editor-basics");
+  const editorSummary = container.querySelector("#editor-summary");
+  const editorExperience = container.querySelector("#editor-experience");
+  const editorEducation = container.querySelector("#editor-education");
+  const editorSkills = container.querySelector("#editor-skills");
+  const editorCertifications = container.querySelector("#editor-certifications");
 
   let parsedResume = null;
   let existingPdfUrl = "";
@@ -180,6 +254,14 @@ export function renderUpload(container, onParsed) {
       await api.updateResumeJson(parsed);
       parsedResume = parsed;
       summaryEl.innerHTML = renderParsedSummary(parsed);
+
+      editorBasics.value = formatSection(parsed.basics || {});
+      editorSummary.value = formatSection(parsed.summary || "");
+      editorExperience.value = formatSection(parsed.experience || []);
+      editorEducation.value = formatSection(parsed.education || []);
+      editorSkills.value = formatSection(parsed.skills || {});
+      editorCertifications.value = formatSection(parsed.certifications || []);
+
       jsonEl.textContent = JSON.stringify(parsed, null, 2);
       resultEl.style.display = "block";
       parseBtn.style.display = "none";
@@ -202,15 +284,14 @@ export function renderUpload(container, onParsed) {
       if (pdfFile && !pdfUploadedThisCycle) {
         const pdfUpload = await api.uploadResumePdf(pdfFile);
         existingPdfUrl = normalizePdfUrl(pdfUpload.pdfUrl || "");
-        parsedResume.pdfUrl = existingPdfUrl;
         pdfUploadedThisCycle = true;
         pdfFileInput.value = "";
         pdfStatusEl.innerHTML = renderPdfStatus(existingPdfUrl, "PDF uploaded");
-        await api.updateResumeJson(parsedResume);
-      } else if ((parsedResume.pdfUrl || "") !== existingPdfUrl) {
-        parsedResume.pdfUrl = existingPdfUrl;
-        await api.updateResumeJson(parsedResume);
       }
+
+      const reviewedResume = buildResumeFromEditor(parsedResume, existingPdfUrl, container);
+      parsedResume = reviewedResume;
+      await api.updateResumeJson(reviewedResume);
       onParsed();
     } catch (err) {
       showBanner(err.message);
