@@ -58,6 +58,7 @@ function renderTopbar(user) {
           <p>If this app has been helpful, you can buy me a coffee via PayNow.</p>
           <div id="qr-code" class="qr-code"></div>
           <p class="modal__hint">Scan the QR with your Singapore banking app (PayNow).</p>
+          <p id="payee-verify" class="payee-verify" style="display:none;"></p>
           <div class="support-log">
             <label for="support-amount" class="form-label">Amount paid (SGD)</label>
             <input id="support-amount" type="number" min="1" step="0.01" placeholder="5.00" />
@@ -128,11 +129,27 @@ function attachCoffeeButton() {
 
 function generatePayNowQR() {
   const qrContainer = document.getElementById("qr-code");
+  const payeeVerify = document.getElementById("payee-verify");
   if (!qrContainer || qrContainer.hasChildNodes()) return;
 
   const payNowId = window.__PAYNOW_ID__;
+  const qrImage = (window.__PAYNOW_QR_IMAGE__ || "").trim();
+  const payeeName = (window.__PAYNOW_PAYEE_NAME__ || "").trim();
+
+  if (payeeVerify && payeeName) {
+    payeeVerify.style.display = "block";
+    payeeVerify.textContent = `Verify payee name in your bank app: ${payeeName}`;
+  }
+
+  if (qrImage) {
+    qrContainer.innerHTML = `
+      <img src="${qrImage}" alt="PayNow QR Code" class="qr-image" />
+    `;
+    return;
+  }
+
   if (!payNowId || payNowId === "0123456789012") {
-    qrContainer.innerHTML = `<p class="modal__error">⚠️ PayNow ID not configured. Please update config.js</p>`;
+    qrContainer.innerHTML = `<p class="modal__error">⚠️ PayNow not configured. Set __PAYNOW_QR_IMAGE__ (preferred) or __PAYNOW_ID__ in config.js.</p>`;
     return;
   }
 

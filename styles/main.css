@@ -623,6 +623,17 @@ details summary:hover {
   color: var(--text-muted);
 }
 
+.payee-verify {
+  width: 100%;
+  font-size: .84rem;
+  color: #c7def8;
+  border: 1px dashed rgba(94, 179, 255, 0.45);
+  background: rgba(94, 179, 255, 0.1);
+  border-radius: var(--radius);
+  padding: .55rem .65rem;
+  text-align: center;
+}
+
 .support-log {
   width: 100%;
   display: flex;

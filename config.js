@@ -8,3 +8,11 @@ window.__PB_PUBLIC_BASE__ = "https://portfolio.handytools.work";
 // Format: 0 or 1 (for UEN/NRIC) followed by 10-11 digit ID
 // Example: window.__PAYNOW_ID__ = "0123456789012";
 window.__PAYNOW_ID__ = "0123456789012";
+
+// Preferred: host your official bank PayNow QR image in this repo and set its path.
+// Example: window.__PAYNOW_QR_IMAGE__ = "assets/paynow-qr.png";
+window.__PAYNOW_QR_IMAGE__ = "";
+
+// Optional but recommended: payee name users should verify before sending.
+// Example: "JAANI NICKOLAS"
+window.__PAYNOW_PAYEE_NAME__ = "";
