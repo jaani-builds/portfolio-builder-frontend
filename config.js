@@ -1,3 +1,5 @@
-// Production: set this to your API custom domain, or use the ?apiBase= query parameter at runtime.
-// Example: https://app.portfolio.handytools.work/?apiBase=https://api.portfolio.handytools.work
+// Production API base (backend domain)
 window.__PB_API_BASE__ = "https://api.portfolio.handytools.work";
+
+// Public portfolio base (viewer domain)
+window.__PB_PUBLIC_BASE__ = "https://portfolio.handytools.work";

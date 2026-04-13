@@ -326,7 +326,7 @@ export function renderSlugConfig(container, onPublished) {
 }
 
 export function renderPublished(container, slug, url, actions = {}) {
-  const fullUrl = `${api.publicOrigin()}${url}`;
+  const fullUrl = /^https?:\/\//i.test(url) ? url : `${api.publicOrigin()}${url}`;
   const escUrl = escapeHtml(fullUrl);
   const onChangeSlug = actions.onChangeSlug || (() => { window.location.hash = "/dashboard/slug"; });
   const onUploadAgain = actions.onUploadAgain || (() => { window.location.hash = "/dashboard/upload"; });

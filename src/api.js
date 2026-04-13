@@ -105,6 +105,28 @@ function activeBaseOrigin() {
   }
 }
 
+function configuredPublicOrigin() {
+  try {
+    const raw = window.__PB_PUBLIC_BASE__ || "";
+    if (!raw) return null;
+    return normalizeBase(raw);
+  } catch {
+    return null;
+  }
+}
+
+function derivedPublicOriginFromApi() {
+  try {
+    const api = new URL(activeBaseOrigin());
+    if (api.hostname.startsWith("api.")) {
+      return `${api.protocol}//${api.hostname.slice(4)}`;
+    }
+    return api.origin;
+  } catch {
+    return activeBaseOrigin();
+  }
+}
+
 // sessionStorage: cleared when the tab is closed (more secure than localStorage)
 const TOKEN_KEY = "pb_token";
 
@@ -256,5 +278,5 @@ export const api = {
   },
 
   /** Public URL helpers */
-  publicOrigin: () => activeBaseOrigin(),
+  publicOrigin: () => configuredPublicOrigin() || derivedPublicOriginFromApi(),
 };
