@@ -445,6 +445,8 @@ textarea.code {
   max-width: 100%;
   height: auto;
   display: block;
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 50%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 50%, transparent 100%);
 }
 
 .login-logo {
