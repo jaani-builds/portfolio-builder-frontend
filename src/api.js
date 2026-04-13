@@ -260,7 +260,12 @@ export const api = {
   extractResumeTextFromPdf: (file) => {
     const formData = new FormData();
     formData.append("file", file);
-    return requestFormData("POST", "/api/resume/extract-pdf", formData);
+    return requestFormData("POST", "/api/resume/extract-file", formData);
+  },
+  extractResumeTextFromFile: (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return requestFormData("POST", "/api/resume/extract-file", formData);
   },
   getResume: () => request("GET", "/api/resume"),
   updateResumeJson: (resume_json) => request("PUT", "/api/resume/json", { resume_json }),

@@ -8,7 +8,7 @@ export function renderLogin(app) {
       <div class="login-stack">
         <div class="card">
           <div class="login-logo">Portfolio Builder</div>
-          <p class="login-tagline">Turn your resume into a hosted portfolio in seconds.</p>
+          <p class="login-tagline">Turn your resume into a web portfolio in seconds.</p>
           <div id="login-error" class="banner banner--error" style="display:none;margin-bottom:0.75rem;"></div>
 
           <div id="oauth-buttons">

@@ -103,36 +103,22 @@ export function renderUpload(container, onParsed) {
   container.innerHTML = `
     <div class="flow-shell">
       <h2>Step 1 — Upload your resume</h2>
-      <p class="subtitle">Paste the plain text of your resume. This same workflow handles first-time publish and future updates.</p>
+      <p class="subtitle">Upload your resume file. We will extract text, parse it into template categories, then let you validate and edit before publishing.</p>
 
       <div id="upload-banner"></div>
 
       <div class="form-group">
-        <label class="form-label" for="resume-text">Resume text</label>
-        <textarea
-          id="resume-text"
-          class="code"
-          rows="18"
-          placeholder="Paste your resume here…"
-          maxlength="50000"
-          spellcheck="false"
-        ></textarea>
-        <p class="form-hint">Plain text only. Max 50,000 characters.</p>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" for="pdf-file">Resume PDF</label>
+        <label class="form-label" for="resume-file">Resume file</label>
         <input
-          id="pdf-file"
+          id="resume-file"
           type="file"
-          accept="application/pdf,.pdf"
+          accept="application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx,application/msword,.doc"
         />
-        <p class="form-hint">Optional. You can extract text from PDF, edit it in the box above, and parse. The PDF will also be uploaded for download link support.</p>
-        <button id="btn-extract-pdf" class="btn btn--secondary" type="button" style="margin-top:.6rem;">Extract text from PDF</button>
-        <div id="pdf-status" class="form-hint" style="margin-top:.5rem;"></div>
+        <p class="form-hint">Supported: PDF and Word (.docx). Legacy .doc support depends on extracted text availability.</p>
+        <div id="file-status" class="form-hint" style="margin-top:.5rem;"></div>
       </div>
 
-      <button id="btn-parse" class="btn btn--primary">Parse Resume</button>
+      <button id="btn-parse" class="btn btn--primary">Extract &amp; Parse Resume</button>
 
       <div id="parse-result" style="margin-top:2rem;display:none;">
         <h3>Validate Parsed Categories</h3>
@@ -179,10 +165,8 @@ export function renderUpload(container, onParsed) {
   const summaryEl = container.querySelector("#parsed-summary");
   const jsonEl = container.querySelector("#parsed-json");
   const parseBtn = container.querySelector("#btn-parse");
-  const extractPdfBtn = container.querySelector("#btn-extract-pdf");
-  const textarea = container.querySelector("#resume-text");
-  const pdfFileInput = container.querySelector("#pdf-file");
-  const pdfStatusEl = container.querySelector("#pdf-status");
+  const resumeFileInput = container.querySelector("#resume-file");
+  const fileStatusEl = container.querySelector("#file-status");
   const editorBasics = container.querySelector("#editor-basics");
   const editorSummary = container.querySelector("#editor-summary");
   const editorExperience = container.querySelector("#editor-experience");
@@ -197,7 +181,7 @@ export function renderUpload(container, onParsed) {
   api.getResume().then((resume) => {
     if (resume?.pdfUrl) {
       existingPdfUrl = normalizePdfUrl(resume.pdfUrl);
-      pdfStatusEl.innerHTML = renderPdfStatus(existingPdfUrl, "Current PDF");
+      fileStatusEl.innerHTML = renderPdfStatus(existingPdfUrl, "Current PDF");
     }
   }).catch(() => {});
 
@@ -205,49 +189,30 @@ export function renderUpload(container, onParsed) {
     bannerEl.innerHTML = `<div class="banner banner--${type}">${escapeHtml(msg)}</div>`;
   }
 
-  extractPdfBtn.addEventListener("click", async () => {
-    const pdfFile = pdfFileInput.files?.[0];
-    if (!pdfFile) {
-      showBanner("Please choose a PDF first.");
-      return;
-    }
-
-    extractPdfBtn.disabled = true;
-    extractPdfBtn.textContent = "Extracting…";
-    bannerEl.innerHTML = "";
-
-    try {
-      const { text } = await api.extractResumeTextFromPdf(pdfFile);
-      textarea.value = (text || "").trim();
-      showBanner("Text extracted from PDF. You can edit it before parsing.", "success");
-    } catch (err) {
-      showBanner(err.message || "Could not extract text from PDF.");
-    } finally {
-      extractPdfBtn.disabled = false;
-      extractPdfBtn.textContent = "Extract text from PDF";
-    }
-  });
-
   parseBtn.addEventListener("click", async () => {
-    const text = textarea.value.trim();
-    if (!text) { showBanner("Please paste your resume text first."); return; }
+    const resumeFile = resumeFileInput.files?.[0];
+    if (!resumeFile) { showBanner("Please upload a resume file first."); return; }
 
     parseBtn.disabled = true;
-    parseBtn.textContent = "Parsing…";
+    parseBtn.textContent = "Extracting & parsing…";
     bannerEl.innerHTML = "";
 
     try {
+      const { text } = await api.extractResumeTextFromFile(resumeFile);
+      if (!text || !text.trim()) {
+        throw new Error("Could not extract text from this file.");
+      }
+
       const { parsed } = await api.uploadResume(text);
       let pdfUrl = existingPdfUrl;
 
-      const pdfFile = pdfFileInput.files?.[0];
-      if (pdfFile) {
-        const pdfUpload = await api.uploadResumePdf(pdfFile);
+      const isPdf = (resumeFile.name || "").toLowerCase().endsWith(".pdf") || resumeFile.type === "application/pdf";
+      if (isPdf) {
+        const pdfUpload = await api.uploadResumePdf(resumeFile);
         pdfUrl = normalizePdfUrl(pdfUpload.pdfUrl || "");
         existingPdfUrl = pdfUrl;
         pdfUploadedThisCycle = true;
-        pdfFileInput.value = "";
-        pdfStatusEl.innerHTML = renderPdfStatus(pdfUrl, "PDF uploaded");
+        fileStatusEl.innerHTML = renderPdfStatus(pdfUrl, "PDF uploaded");
       }
 
       parsed.pdfUrl = pdfUrl;
@@ -265,11 +230,12 @@ export function renderUpload(container, onParsed) {
       jsonEl.textContent = JSON.stringify(parsed, null, 2);
       resultEl.style.display = "block";
       parseBtn.style.display = "none";
+      showBanner("Resume parsed into template categories. Review and confirm.", "success");
     } catch (err) {
       showBanner(err.message);
     } finally {
       parseBtn.disabled = false;
-      parseBtn.textContent = "Parse Resume";
+      parseBtn.textContent = "Extract & Parse Resume";
     }
   });
 
@@ -280,13 +246,13 @@ export function renderUpload(container, onParsed) {
     }
 
     try {
-      const pdfFile = pdfFileInput.files?.[0];
-      if (pdfFile && !pdfUploadedThisCycle) {
-        const pdfUpload = await api.uploadResumePdf(pdfFile);
+      const resumeFile = resumeFileInput.files?.[0];
+      const isPdf = resumeFile && (((resumeFile.name || "").toLowerCase().endsWith(".pdf")) || resumeFile.type === "application/pdf");
+      if (isPdf && !pdfUploadedThisCycle) {
+        const pdfUpload = await api.uploadResumePdf(resumeFile);
         existingPdfUrl = normalizePdfUrl(pdfUpload.pdfUrl || "");
         pdfUploadedThisCycle = true;
-        pdfFileInput.value = "";
-        pdfStatusEl.innerHTML = renderPdfStatus(existingPdfUrl, "PDF uploaded");
+        fileStatusEl.innerHTML = renderPdfStatus(existingPdfUrl, "PDF uploaded");
       }
 
       const reviewedResume = buildResumeFromEditor(parsedResume, existingPdfUrl, container);
@@ -300,9 +266,10 @@ export function renderUpload(container, onParsed) {
   container.querySelector("#btn-reparse").addEventListener("click", () => {
     resultEl.style.display = "none";
     parseBtn.style.display = "";
-    textarea.value = "";
+    if (resumeFileInput) resumeFileInput.value = "";
     pdfUploadedThisCycle = false;
     bannerEl.innerHTML = "";
+    fileStatusEl.innerHTML = existingPdfUrl ? renderPdfStatus(existingPdfUrl, "Current PDF") : "";
   });
 }
 

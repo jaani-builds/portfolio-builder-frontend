@@ -316,10 +316,6 @@ async function renderDashboard(path) {
         ${stepEl("2. Publish", ROUTES.slug, sub === "slug")}
         ${stepEl("3. Done", ROUTES.done, sub === "done")}
       </div>
-      <div class="support-inline">
-        <span>Want to support this project?</span>
-        <button class="btn btn--ghost" data-support-trigger="true">Buy me a coffee</button>
-      </div>
       <div id="step-content"></div>
     </div>
   `;
