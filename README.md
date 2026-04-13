@@ -25,9 +25,9 @@ Override API base at runtime with query parameter:
 
 - `http://localhost:5174/?apiBase=http://localhost:8000`
 
-For production (Cloudflare Pages), open your site with:
+For production, the API base is:
 
-- `https://<your-pages-domain>/?apiBase=<your-api-gateway-url>`
+- `https://api.portfolio.handytools.work`
 
 The backend is expected to be configured with AWS-native services:
 
@@ -54,18 +54,18 @@ After deployment:
 	window.__PB_API_BASE__ = "https://<your-api-gateway-domain>";
 4. Optional one-off override: append `?apiBase=https://<your-api-gateway-domain>`.
 
-## Use your own domain
+## Custom domain (deployed)
 
-If your frontend custom domain is `https://app.yourdomain.com`:
+This frontend is hosted at `https://app.portfolio.handytools.work`:
 
-1. Add `app.yourdomain.com` as a custom domain in Cloudflare Pages.
-2. In backend Terraform values, set:
-	frontend_url = "https://app.yourdomain.com"
-3. Set GitHub OAuth App values:
-	Homepage URL: https://app.yourdomain.com
-	Authorization callback URL: https://<your-api-gateway-domain>/api/auth/callback/github
-4. In frontend `config.js`, set:
-	window.__PB_API_BASE__ = "https://<your-api-gateway-domain>";
+1. Custom domain `app.portfolio.handytools.work` added in Cloudflare Pages.
+2. Backend Terraform variable:
+	`frontend_url = "https://app.portfolio.handytools.work"`
+3. GitHub OAuth App values:
+	Homepage URL: https://app.portfolio.handytools.work
+	Authorization callback URL: https://api.portfolio.handytools.work/api/auth/callback/github
+4. In frontend `config.js`:
+	`window.__PB_API_BASE__ = "https://api.portfolio.handytools.work";`
 
 ## Local Docker run
 
