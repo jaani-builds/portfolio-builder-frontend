@@ -81,7 +81,8 @@ export function renderUpload(container, onParsed) {
           type="file"
           accept="application/pdf,.pdf"
         />
-        <p class="form-hint">Optional. Upload a PDF and the app will store it in a dedicated public GitHub repo in your account, then attach that link to the Download PDF button automatically.</p>
+        <p class="form-hint">Optional. You can extract text from PDF, edit it in the box above, and parse. The PDF will also be uploaded for download link support.</p>
+        <button id="btn-extract-pdf" class="btn btn--secondary" type="button" style="margin-top:.6rem;">Extract text from PDF</button>
         <div id="pdf-status" class="form-hint" style="margin-top:.5rem;"></div>
       </div>
 
@@ -105,6 +106,7 @@ export function renderUpload(container, onParsed) {
   const summaryEl = container.querySelector("#parsed-summary");
   const jsonEl = container.querySelector("#parsed-json");
   const parseBtn = container.querySelector("#btn-parse");
+  const extractPdfBtn = container.querySelector("#btn-extract-pdf");
   const textarea = container.querySelector("#resume-text");
   const pdfFileInput = container.querySelector("#pdf-file");
   const pdfStatusEl = container.querySelector("#pdf-status");
@@ -123,6 +125,29 @@ export function renderUpload(container, onParsed) {
   function showBanner(msg, type = "error") {
     bannerEl.innerHTML = `<div class="banner banner--${type}">${escapeHtml(msg)}</div>`;
   }
+
+  extractPdfBtn.addEventListener("click", async () => {
+    const pdfFile = pdfFileInput.files?.[0];
+    if (!pdfFile) {
+      showBanner("Please choose a PDF first.");
+      return;
+    }
+
+    extractPdfBtn.disabled = true;
+    extractPdfBtn.textContent = "Extracting…";
+    bannerEl.innerHTML = "";
+
+    try {
+      const { text } = await api.extractResumeTextFromPdf(pdfFile);
+      textarea.value = (text || "").trim();
+      showBanner("Text extracted from PDF. You can edit it before parsing.", "success");
+    } catch (err) {
+      showBanner(err.message || "Could not extract text from PDF.");
+    } finally {
+      extractPdfBtn.disabled = false;
+      extractPdfBtn.textContent = "Extract text from PDF";
+    }
+  });
 
   parseBtn.addEventListener("click", async () => {
     const text = textarea.value.trim();
