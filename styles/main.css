@@ -441,8 +441,10 @@ textarea.code {
 }
 
 .login-brand__logo {
-  max-height: 56px;
-  width: auto;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 
 .login-logo {
