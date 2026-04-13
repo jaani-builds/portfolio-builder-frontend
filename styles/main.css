@@ -632,6 +632,15 @@ details summary:hover {
   color: var(--text-muted);
 }
 
+.modal__sgd-note {
+  font-size: .82rem;
+  color: #f5d77a;
+  background: rgba(245, 215, 122, 0.12);
+  border: 1px solid rgba(245, 215, 122, 0.35);
+  border-radius: var(--radius);
+  padding: .45rem .6rem;
+}
+
 .payee-verify {
   width: 100%;
   font-size: .84rem;

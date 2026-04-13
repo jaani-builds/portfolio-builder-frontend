@@ -39,7 +39,7 @@ function renderTopbar(user) {
     <nav class="topbar">
       <a class="topbar__brand" href="#/dashboard">Portfolio Builder</a>
       <div class="topbar__user">
-        <button id="btn-support-topbar" class="btn btn--support-topbar" title="Support this project">Support this project</button>
+        <button id="btn-support-topbar" class="btn btn--support-topbar" title="Support this project" aria-label="Support this project">💛</button>
         ${user.avatar_url
           ? `<img class="topbar__avatar" src="${user.avatar_url}" alt="${user.name}" />`
           : ""}
@@ -56,6 +56,8 @@ function renderTopbar(user) {
         </div>
         <div class="modal__body">
           <p>If this app has been helpful, you can buy me a coffee via PayNow.</p>
+          <p id="modal-thankyou" class="modal__thankyou" style="display:none;">Thank you for supporting this project 💛</p>
+          <p class="modal__sgd-note">Supports SGD only at the moment.</p>
           <div id="qr-code" class="qr-code"></div>
           <p class="modal__hint">Scan the QR with your Singapore banking app (PayNow).</p>
           <p id="payee-verify" class="payee-verify" style="display:none;"></p>
@@ -86,11 +88,13 @@ function attachCoffeeButton() {
   const overlay = modal?.querySelector(".modal__overlay");
   const logBtn = document.getElementById("btn-log-support");
   const logMsg = document.getElementById("support-log-msg");
+  const thankYou = document.getElementById("modal-thankyou");
   const amountInput = document.getElementById("support-amount");
 
   app.querySelectorAll('[data-support-trigger="true"], #btn-support-topbar').forEach((btn) => {
     btn.addEventListener("click", () => {
       modal?.classList.remove("modal--hidden");
+      if (thankYou) thankYou.style.display = "block";
       generatePayNowQR();
     });
   });
@@ -130,10 +134,14 @@ function attachCoffeeButton() {
 function generatePayNowQR() {
   const qrContainer = document.getElementById("qr-code");
   const payeeVerify = document.getElementById("payee-verify");
-  if (!qrContainer || qrContainer.hasChildNodes()) return;
+  if (!qrContainer) return;
+  qrContainer.innerHTML = "";
 
   const payNowId = window.__PAYNOW_ID__;
-  const qrImage = (window.__PAYNOW_QR_IMAGE__ || "").trim();
+  const qrImageRaw = (window.__PAYNOW_QR_IMAGE__ || "").trim();
+  const qrImage = qrImageRaw
+    ? (/^(https?:)?\/\//.test(qrImageRaw) || qrImageRaw.startsWith("/") ? qrImageRaw : `/${qrImageRaw}`)
+    : "";
   const payeeName = (window.__PAYNOW_PAYEE_NAME__ || "").trim();
 
   if (payeeVerify && payeeName) {
