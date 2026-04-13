@@ -5,8 +5,7 @@
  *   #/login            → login page
  *   #/dashboard        → home card for unified workflow
  *   #/dashboard/upload → upload step
- *   #/dashboard/slug   → slug/publish step
- *   #/dashboard/done   → published confirmation
+ *   #/dashboard/slug   → publish step (choose username + go live)
  */
 
 import { auth, api } from "./api.js";
@@ -21,12 +20,10 @@ const ROUTES = {
   dashboard: "/dashboard",
   upload: "/dashboard/upload",
   slug: "/dashboard/slug",
-  done: "/dashboard/done",
 };
 
 function getDashboardStep(path) {
-  if (path.includes("/slug")) return "slug";
-  if (path.includes("/done")) return "done";
+  if (path.includes("/slug") || path.includes("/done")) return "slug";
   return "upload";
 }
 
@@ -314,7 +311,6 @@ async function renderDashboard(path) {
       <div class="steps">
         ${stepEl("1. Upload Resume", ROUTES.upload, sub === "upload")}
         ${stepEl("2. Publish", ROUTES.slug, sub === "slug")}
-        ${stepEl("3. Done", ROUTES.done, sub === "done")}
       </div>
       <div id="step-content"></div>
     </div>
@@ -336,8 +332,6 @@ async function renderDashboard(path) {
     });
   } else if (sub === "slug") {
     renderSlugConfig(stepContent, (slug, url) => {
-      navigate(ROUTES.done);
-      // Re-render done immediately without waiting for hashchange
       const sc = document.getElementById("step-content");
       if (sc) {
         renderPublished(sc, slug, url, {
@@ -346,43 +340,6 @@ async function renderDashboard(path) {
         });
       }
     });
-  } else if (sub === "done") {
-    try {
-      const [{ slug }, resume] = await Promise.all([
-        api.getSlug(),
-        api.getResume().catch(() => null),
-      ]);
-
-      if (slug) {
-        renderPublished(stepContent, slug, `/${slug}/`, {
-          onChangeSlug: () => navigate(ROUTES.slug),
-          onUploadAgain: () => navigate(ROUTES.upload),
-        });
-        return;
-      }
-
-      // Keep Done tab available even before publishing.
-      stepContent.innerHTML = `
-        <div class="flow-shell">
-          <div class="banner banner--error" style="margin-bottom:1rem;">Your portfolio is not live yet.</div>
-          <h2>Step 3 — Done</h2>
-          <p class="subtitle">Publish a slug to make your portfolio live at a public URL.</p>
-          <button id="btn-go-publish" class="btn btn--primary" style="margin-right:.5rem;">Go to Publish</button>
-          ${resume ? '<button id="btn-go-upload" class="btn btn--secondary">Upload new resume</button>' : '<button id="btn-go-upload" class="btn btn--secondary">Upload resume first</button>'}
-        </div>
-      `;
-
-      stepContent.querySelector("#btn-go-publish")?.addEventListener("click", () => {
-        navigate(ROUTES.slug);
-      });
-      stepContent.querySelector("#btn-go-upload")?.addEventListener("click", () => {
-        navigate(ROUTES.upload);
-      });
-    } catch {
-      stepContent.innerHTML = `
-        <div class="banner banner--error">Could not load your publish status right now.</div>
-      `;
-    }
   }
 }
 

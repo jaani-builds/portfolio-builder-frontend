@@ -276,15 +276,15 @@ export function renderUpload(container, onParsed) {
 export function renderSlugConfig(container, onPublished) {
   container.innerHTML = `
     <div class="flow-shell">
-      <h2>Step 2 — Choose your portfolio address</h2>
+      <h2>Step 2 — Publish your portfolio</h2>
       <p class="subtitle">
-        Pick a unique slug for your portfolio URL. You can share this link with anyone and update it later anytime.
+        Pick a unique username for your portfolio URL. You can share this link with anyone and update it later anytime.
       </p>
 
       <div id="slug-banner"></div>
 
       <div class="form-group">
-        <label class="form-label" for="slug-input">Portfolio slug</label>
+        <label class="form-label" for="slug-input">Username</label>
         <input
           id="slug-input"
           type="text"
@@ -341,7 +341,7 @@ export function renderSlugConfig(container, onPublished) {
     // Strip leading/trailing hyphens
     slug = slug.replace(/^-+|-+$/g, '');
     bannerEl.innerHTML = "";
-    if (!slug) { bannerEl.innerHTML = `<div class="banner banner--error">Please enter a slug.</div>`; return; }
+    if (!slug) { bannerEl.innerHTML = `<div class="banner banner--error">Please enter a username.</div>`; return; }
 
     publishBtn.disabled = true;
     publishBtn.textContent = "Publishing…";
@@ -360,7 +360,7 @@ export function renderSlugConfig(container, onPublished) {
         }
 
         bannerEl.innerHTML = `
-          <div class="banner banner--error" style="margin-bottom:.6rem;">That slug is already taken.</div>
+          <div class="banner banner--error" style="margin-bottom:.6rem;">That username is already taken.</div>
           <div class="slug-suggestions">
             ${suggestions.length
               ? `<p class="form-hint" style="margin-bottom:.5rem;">Try one of these:</p>
@@ -369,7 +369,7 @@ export function renderSlugConfig(container, onPublished) {
                  </div>`
               : ""
             }
-            <button type="button" id="btn-auto-suffix" class="btn btn--secondary" style="margin-top:.6rem;">Auto-choose available slug</button>
+            <button type="button" id="btn-auto-suffix" class="btn btn--secondary" style="margin-top:.6rem;">Auto-choose available username</button>
           </div>
         `;
 
@@ -424,7 +424,7 @@ export function renderPublished(container, slug, url, actions = {}) {
       <a href="${escUrl}" target="_blank" rel="noopener" class="btn btn--primary" style="margin-right:.5rem;">
         Open portfolio
       </a>
-      <button id="btn-update-slug" class="btn btn--secondary">Change slug</button>
+      <button id="btn-update-slug" class="btn btn--secondary">Change username</button>
       <button id="btn-upload-again" class="btn btn--secondary" style="margin-left:.5rem;">Upload new resume</button>
     </div>
   `;
