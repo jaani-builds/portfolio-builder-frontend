@@ -1,7 +1,7 @@
 import { api } from "./api.js";
 
 export function renderLogin(app) {
-  const sampleUrl = "https://portfolio.handytools.work/daniel-kim/";
+  const sampleUrl = "https://portfolio.handytools.work/danielkim/";
 
   app.innerHTML = `
     <div class="page-center">
