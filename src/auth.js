@@ -20,9 +20,9 @@ export function renderLogin(app) {
         </div>
 
         <a class="sample-output" href="${sampleUrl}" target="_blank" rel="noopener">
-          <span class="sample-output__badge">Sample output</span>
+          <span class="sample-output__badge">Live example</span>
           <span class="sample-output__title">Daniel Kim Portfolio</span>
-          <span class="sample-output__meta">Open live example ↗</span>
+          <span class="sample-output__meta">A real portfolio published with this builder ↗</span>
         </a>
       </div>
     </div>
