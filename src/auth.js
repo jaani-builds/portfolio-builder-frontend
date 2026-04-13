@@ -1,8 +1,4 @@
-import { api } from "./api.js";
-
 export function renderLogin(app) {
-  const sampleUrl = `${api.baseUrl()}/live-example/`;
-
   app.innerHTML = `
     <div class="page-center">
       <div class="login-stack">
@@ -20,12 +16,6 @@ export function renderLogin(app) {
             </button>
           </div>
         </div>
-
-        <a class="sample-output sample-output--panel" href="${sampleUrl}" target="_blank" rel="noopener">
-          <span class="sample-output__badge">Live example</span>
-          <span class="sample-output__title">Daniel Kim's Portfolio</span>
-          <span class="sample-output__meta">Preview a rendered portfolio generated from parsed JSON ↗</span>
-        </a>
       </div>
     </div>
   `;
