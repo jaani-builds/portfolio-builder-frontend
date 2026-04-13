@@ -435,6 +435,16 @@ textarea.code {
 .json-summary dd { font-size: .88rem; word-break: break-word; color: var(--text); }
 
 /* ── Login page ───────────────────────────────────────────────────────────── */
+.login-brand {
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.login-brand__logo {
+  max-height: 56px;
+  width: auto;
+}
+
 .login-logo {
   font-family: var(--font-heading);
   font-size: 2rem;

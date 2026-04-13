@@ -2,6 +2,9 @@ export function renderLogin(app) {
   app.innerHTML = `
     <div class="page-center">
       <div class="login-stack">
+        <div class="login-brand">
+          <img src="assets/logo.png" alt="Portfolio Builder" class="login-brand__logo" />
+        </div>
         <div class="card">
           <div class="login-logo">Portfolio Builder</div>
           <p class="login-tagline">Turn your resume into a web portfolio in seconds.</p>
