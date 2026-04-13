@@ -725,4 +725,37 @@ details summary:hover {
   .support-panel { padding: .95rem 1rem; }
   .support-inline { justify-content: flex-start; }
   .flow-shell { padding: 1.1rem; }
+
+  .modal {
+    align-items: flex-start;
+    padding-top: 1.25rem;
+    padding-left: .6rem;
+    padding-right: .6rem;
+  }
+
+  .modal__content {
+    width: 100%;
+    max-width: 360px;
+    padding: 1.1rem .95rem;
+    max-height: calc(100vh - 2.2rem);
+    overflow-y: auto;
+  }
+
+  .modal__header {
+    margin-bottom: .85rem;
+  }
+
+  .modal__body {
+    gap: .65rem;
+  }
+
+  .qr-code {
+    min-height: 200px;
+    padding: .65rem;
+  }
+
+  .qr-image {
+    max-height: 180px;
+    width: auto;
+  }
 }
