@@ -137,8 +137,8 @@ function generatePayNowQR() {
   if (!qrContainer) return;
   qrContainer.innerHTML = "";
 
-  const payNowId = window.__PAYNOW_ID__;
-  const qrImageRaw = (window.__PAYNOW_QR_IMAGE__ || "").trim();
+  const payNowId = (window.__PAYNOW_ID__ || "").trim();
+  const qrImageRaw = (window.__PAYNOW_QR_IMAGE__ || "assets/paynow-qr.png").trim();
   const qrImage = qrImageRaw
     ? (/^(https?:)?\/\//.test(qrImageRaw) || qrImageRaw.startsWith("/") ? qrImageRaw : `/${qrImageRaw}`)
     : "";
@@ -150,9 +150,14 @@ function generatePayNowQR() {
   }
 
   if (qrImage) {
-    qrContainer.innerHTML = `
-      <img src="${qrImage}" alt="PayNow QR Code" class="qr-image" />
-    `;
+    const img = document.createElement("img");
+    img.src = qrImage;
+    img.alt = "PayNow QR Code";
+    img.className = "qr-image";
+    img.onerror = () => {
+      qrContainer.innerHTML = `<p class="modal__error">⚠️ Could not load PayNow QR image at ${qrImage}. Check config.js path and deployment assets.</p>`;
+    };
+    qrContainer.appendChild(img);
     return;
   }
 
