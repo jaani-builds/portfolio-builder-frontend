@@ -1,6 +1,8 @@
 import { api } from "./api.js";
 
 export function renderLogin(app) {
+  const sampleUrl = "https://portfolio.handytools.work/daniel-kim/";
+
   app.innerHTML = `
     <div class="page-center">
       <div class="card">
@@ -16,6 +18,12 @@ export function renderLogin(app) {
             Continue with GitHub
           </button>
         </div>
+
+        <a class="sample-output" href="${sampleUrl}" target="_blank" rel="noopener">
+          <span class="sample-output__badge">Sample output</span>
+          <span class="sample-output__title">Daniel Kim Portfolio</span>
+          <span class="sample-output__meta">Open live example ↗</span>
+        </a>
       </div>
     </div>
   `;
