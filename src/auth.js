@@ -20,6 +20,18 @@ export function renderLogin(app) {
                 </svg>
                 GitHub
               </button>
+              <button class="oauth-option" id="btn-google" type="button">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M21.8 12.2c0-.7-.1-1.3-.2-1.9H12v3.6h5.5c-.2 1.2-.9 2.2-1.9 2.8v2.3h3.1c1.8-1.6 3.1-4.1 3.1-6.8z" fill="#4285F4"/>
+                  <path d="M12 22c2.7 0 4.9-.9 6.6-2.5l-3.1-2.3c-.9.6-2 .9-3.4.9-2.6 0-4.8-1.7-5.6-4.1H3.3v2.4C5 19.8 8.2 22 12 22z" fill="#34A853"/>
+                  <path d="M6.4 14c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V7.6H3.3C2.5 9 2 10.5 2 12s.5 3 1.3 4.4L6.4 14z" fill="#FBBC05"/>
+                  <path d="M12 5.9c1.5 0 2.8.5 3.8 1.5l2.8-2.8C16.9 3 14.7 2 12 2 8.2 2 5 4.2 3.3 7.6L6.4 10c.8-2.4 3-4.1 5.6-4.1z" fill="#EA4335"/>
+                </svg>
+                Google
+              </button>
+              <!-- LinkedIn and Apple: enabled once credentials are configured -->
+              <!-- <button class="oauth-option" id="btn-linkedin" type="button">LinkedIn</button> -->
+              <!-- <button class="oauth-option" id="btn-apple" type="button">Apple</button> -->
             </div>
           </div>
         </div>
@@ -65,6 +77,42 @@ export function renderLogin(app) {
     } catch (err) {
       if (errorEl) {
         errorEl.textContent = err?.message || "Could not start GitHub sign in.";
+        errorEl.style.display = "block";
+      }
+    }
+  });
+
+  document.getElementById("btn-google").addEventListener("click", () => {
+    const errorEl = document.getElementById("login-error");
+    try {
+      api.loginGoogle();
+    } catch (err) {
+      if (errorEl) {
+        errorEl.textContent = err?.message || "Could not start Google sign in.";
+        errorEl.style.display = "block";
+      }
+    }
+  });
+
+  document.getElementById("btn-linkedin").addEventListener("click", () => {
+    const errorEl = document.getElementById("login-error");
+    try {
+      api.loginLinkedin();
+    } catch (err) {
+      if (errorEl) {
+        errorEl.textContent = err?.message || "Could not start LinkedIn sign in.";
+        errorEl.style.display = "block";
+      }
+    }
+  });
+
+  document.getElementById("btn-apple").addEventListener("click", () => {
+    const errorEl = document.getElementById("login-error");
+    try {
+      api.loginApple();
+    } catch (err) {
+      if (errorEl) {
+        errorEl.textContent = err?.message || "Could not start Apple sign in.";
         errorEl.style.display = "block";
       }
     }

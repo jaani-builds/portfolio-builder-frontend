@@ -290,6 +290,30 @@ export const api = {
     }
     window.location.href = `${activeBase}/api/auth/github`;
   },
+  loginGoogle: () => {
+    if (shouldBlockUnconfiguredProdOAuth(activeBase)) {
+      throw new Error(
+        "API base is not configured for production. Open this app using ?apiBase=<your-api-url> or set window.__PB_API_BASE__ in config.js."
+      );
+    }
+    window.location.href = `${activeBase}/api/auth/google`;
+  },
+  loginLinkedin: () => {
+    if (shouldBlockUnconfiguredProdOAuth(activeBase)) {
+      throw new Error(
+        "API base is not configured for production. Open this app using ?apiBase=<your-api-url> or set window.__PB_API_BASE__ in config.js."
+      );
+    }
+    window.location.href = `${activeBase}/api/auth/linkedin`;
+  },
+  loginApple: () => {
+    if (shouldBlockUnconfiguredProdOAuth(activeBase)) {
+      throw new Error(
+        "API base is not configured for production. Open this app using ?apiBase=<your-api-url> or set window.__PB_API_BASE__ in config.js."
+      );
+    }
+    window.location.href = `${activeBase}/api/auth/apple`;
+  },
 
   /** Public URL helpers */
   publicOrigin: () => configuredPublicOrigin() || derivedPublicOriginFromApi(),
