@@ -84,6 +84,8 @@ function buildResumeFromEditor(parsedResume, existingPdfUrl, container) {
   const educationText = container.querySelector("#editor-education")?.value || "[]";
   const skillsText = container.querySelector("#editor-skills")?.value || "{}";
   const certsText = container.querySelector("#editor-certifications")?.value || "[]";
+  const recommendationsText = container.querySelector("#editor-recommendations")?.value || "[]";
+  const experimentsText = container.querySelector("#editor-experiments")?.value || "[]";
 
   const updated = {
     ...parsedResume,
@@ -93,6 +95,8 @@ function buildResumeFromEditor(parsedResume, existingPdfUrl, container) {
     education: parseJsonSection(educationText, "education"),
     skills: parseJsonSection(skillsText, "skills"),
     certifications: parseJsonSection(certsText, "certifications"),
+    recommendations: parseJsonSection(recommendationsText, "recommendations"),
+    experiments: parseJsonSection(experimentsText, "experiments"),
     pdfUrl: existingPdfUrl || parsedResume.pdfUrl || "",
   };
 
@@ -194,6 +198,28 @@ export function renderUpload(container, onParsed) {
             </div>
           </details>
 
+          <details class="acc" id="acc-recommendations">
+            <summary class="acc__hd">
+              <span class="acc__title">Recommendations</span>
+              <span class="acc__badge" id="badge-recommendations">—</span>
+            </summary>
+            <div class="acc__body">
+              <p class="form-hint">JSON array of recommendation objects (name, role, quote, source, linkedinUrl).</p>
+              <textarea id="editor-recommendations" class="code" rows="7" spellcheck="false" placeholder='[{"name":"","role":"","quote":"","source":"","linkedinUrl":""}]'></textarea>
+            </div>
+          </details>
+
+          <details class="acc" id="acc-experiments">
+            <summary class="acc__hd">
+              <span class="acc__title">Experiments</span>
+              <span class="acc__badge" id="badge-experiments">—</span>
+            </summary>
+            <div class="acc__body">
+              <p class="form-hint">JSON array of experiment objects (name, type, backend, frontend).</p>
+              <textarea id="editor-experiments" class="code" rows="8" spellcheck="false" placeholder='[{"name":"","type":"","backend":{"tech":[],"highlights":[],"links":[]},"frontend":{"tech":[],"highlights":[],"links":[]}}]'></textarea>
+            </div>
+          </details>
+
         </div>
         <div class="parse-actions">
           <button id="btn-accept" class="btn btn--primary">Confirm categories &amp; continue</button>
@@ -215,6 +241,8 @@ export function renderUpload(container, onParsed) {
   const editorEducation = container.querySelector("#editor-education");
   const editorSkills = container.querySelector("#editor-skills");
   const editorCertifications = container.querySelector("#editor-certifications");
+  const editorRecommendations = container.querySelector("#editor-recommendations");
+  const editorExperiments = container.querySelector("#editor-experiments");
 
   function setAccordion(id, badgeId, open, badgeText, isEmpty) {
     const el = container.querySelector(`#${id}`);
@@ -284,12 +312,16 @@ export function renderUpload(container, onParsed) {
       editorEducation.value = formatSection(parsed.education || []);
       editorSkills.value = formatSection(parsed.skills || {});
       editorCertifications.value = formatSection(parsed.certifications || []);
+      editorRecommendations.value = formatSection(parsed.recommendations || []);
+      editorExperiments.value = formatSection(parsed.experiments || []);
 
       // Keep all categories collapsed by default. Badges still surface parse quality.
       const expLen = (parsed.experience || []).length;
       const eduLen = (parsed.education || []).length;
       const skillGroups = Object.keys(parsed.skills || {}).length;
       const certLen = (parsed.certifications || []).length;
+      const recommendationsLen = (parsed.recommendations || []).length;
+      const experimentsLen = (parsed.experiments || []).length;
       const hasBasics = !!(parsed.basics?.name || parsed.basics?.email);
       const hasSummary = !!(parsed.summary || "").trim();
 
@@ -311,6 +343,12 @@ export function renderUpload(container, onParsed) {
       setAccordion("acc-certifications", "badge-certifications", false,
         certLen > 0 ? `${certLen} item${certLen === 1 ? "" : "s"}` : "Empty — fill in",
         certLen === 0);
+      setAccordion("acc-recommendations", "badge-recommendations", false,
+        recommendationsLen > 0 ? `${recommendationsLen} item${recommendationsLen === 1 ? "" : "s"}` : "Empty — fill in",
+        recommendationsLen === 0);
+      setAccordion("acc-experiments", "badge-experiments", false,
+        experimentsLen > 0 ? `${experimentsLen} item${experimentsLen === 1 ? "" : "s"}` : "Empty — fill in",
+        experimentsLen === 0);
 
       resultEl.style.display = "block";
       parseBtn.style.display = "none";

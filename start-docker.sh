@@ -12,7 +12,7 @@ docker rm -f portfolio-builder-frontend >/dev/null 2>&1 || true
 
 echo "Starting frontend on http://localhost:5174 ..."
 docker run -d --name portfolio-builder-frontend \
-  -p 5174:80 \
+  -p 5174:8080 \
   portfolio-builder-frontend:local
 
 echo ""

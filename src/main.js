@@ -240,7 +240,7 @@ async function renderDashboard(path) {
           <h2 class="home-title">Welcome back, ${currentUser.name || "there"}</h2>
           <p class="home-subtitle">Use one workflow to publish your first resume or update your existing one.</p>
 
-          <div class="home-cards home-cards--single">
+          <div class="home-cards">
             <article class="home-card">
               <h3>${resume ? "Update Your Portfolio Resume" : "Publish Your Resume"}</h3>
               <p>${resume ? "Upload fresh resume text to update your portfolio and republish if needed." : "Upload resume text, parse it, and publish your portfolio URL."}</p>
@@ -256,12 +256,6 @@ async function renderDashboard(path) {
           ` : ""}
         </div>
 
-        <aside class="support-panel" aria-label="Support this project">
-          <p class="support-panel__kicker">💛 Support</p>
-          <h3>Like this tool?</h3>
-          <p>If it helped you today, you can buy me a coffee via PayNow.</p>
-          <button class="btn btn--secondary" data-support-trigger="true">Support this project ☕</button>
-        </aside>
       </div>
     `;
 
