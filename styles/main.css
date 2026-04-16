@@ -1010,11 +1010,13 @@ details[open] > .acc__hd::after { transform: rotate(90deg); }
   .login-intro {
     width: 100%;
     height: 100%;
+    overflow: hidden;
   }
 
   .login-intro__frame {
     width: 100%;
-    height: 100vh;
+    height: 100svh;
+    max-width: 100%;
   }
 
   .btn--signin-prominent {

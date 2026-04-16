@@ -263,6 +263,50 @@
     z-index:90;pointer-events:none;letter-spacing:.01em;
   }
   #caption-bar.show{opacity:1;}
+
+  /* ── Mobile ── */
+  @media (max-width: 600px) {
+    .static-text-overlay p {
+      font-size: 1.1rem;
+      white-space: normal;
+      text-align: center;
+    }
+    .static-text-overlay { top: 5%; padding: 0 1rem; }
+
+    /* S1 */
+    .avatar-ring { width: 100px; height: 100px; }
+    .avatar-inner { font-size: 44px; }
+    .name-text { font-size: 36px; }
+    .tagline { font-size: 14px; }
+
+    /* S2 */
+    .upload-card { width: 90vw; padding: 28px 20px; }
+    .upload-title { font-size: 20px; }
+    .upload-sub { font-size: 13px; }
+
+    /* S3 */
+    .step-list { width: 90vw; }
+    .processing-label { font-size: 16px; }
+    #s3-canvas { width: 90vw !important; height: auto !important; }
+
+    /* S4 */
+    .browser-window { width: 92vw; }
+    .p-cards { grid-template-columns: 1fr 1fr; }
+
+    /* S5 */
+    .share-card { width: 90vw; padding: 28px 20px; }
+    .share-title { font-size: 20px; }
+    .share-sub { font-size: 13px; }
+    .url-pill { font-size: 12px; flex-direction: column; align-items: flex-start; gap: 8px; }
+
+    /* caption */
+    #caption-bar { font-size: 13px; padding: 6px 16px; bottom: 36px; width: 90vw; }
+
+    /* blobs — shrink so they don't force overflow */
+    .blob1 { width: 280px; height: 280px; }
+    .blob2 { width: 240px; height: 240px; }
+    .blob3 { width: 200px; height: 200px; }
+  }
 </style>
 </head>
 <body>
