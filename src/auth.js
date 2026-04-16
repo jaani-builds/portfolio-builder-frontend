@@ -29,8 +29,13 @@ export function renderLogin(app) {
                 </svg>
                 Google
               </button>
-              <!-- LinkedIn and Apple: enabled once credentials are configured -->
-              <!-- <button class="oauth-option" id="btn-linkedin" type="button">LinkedIn</button> -->
+              <button class="oauth-option" id="btn-linkedin" type="button">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M6.94 8.5H3.56v12h3.38v-12zM5.25 3A1.97 1.97 0 103.28 5a1.97 1.97 0 001.97-2zM20.44 13.69c0-3.61-1.93-5.29-4.5-5.29a3.9 3.9 0 00-3.5 1.93V8.5H9.06v12h3.38v-6.7c0-1.77.33-3.48 2.52-3.48 2.16 0 2.19 2.02 2.19 3.59v6.59h3.38v-6.81z"/>
+                </svg>
+                LinkedIn
+              </button>
+              <!-- Apple: enable once credentials are configured -->
               <!-- <button class="oauth-option" id="btn-apple" type="button">Apple</button> -->
             </div>
           </div>
@@ -94,29 +99,35 @@ export function renderLogin(app) {
     }
   });
 
-  document.getElementById("btn-linkedin").addEventListener("click", () => {
-    const errorEl = document.getElementById("login-error");
-    try {
-      api.loginLinkedin();
-    } catch (err) {
-      if (errorEl) {
-        errorEl.textContent = err?.message || "Could not start LinkedIn sign in.";
-        errorEl.style.display = "block";
+  const linkedinBtn = document.getElementById("btn-linkedin");
+  if (linkedinBtn) {
+    linkedinBtn.addEventListener("click", () => {
+      const errorEl = document.getElementById("login-error");
+      try {
+        api.loginLinkedin();
+      } catch (err) {
+        if (errorEl) {
+          errorEl.textContent = err?.message || "Could not start LinkedIn sign in.";
+          errorEl.style.display = "block";
+        }
       }
-    }
-  });
+    });
+  }
 
-  document.getElementById("btn-apple").addEventListener("click", () => {
-    const errorEl = document.getElementById("login-error");
-    try {
-      api.loginApple();
-    } catch (err) {
-      if (errorEl) {
-        errorEl.textContent = err?.message || "Could not start Apple sign in.";
-        errorEl.style.display = "block";
+  const appleBtn = document.getElementById("btn-apple");
+  if (appleBtn) {
+    appleBtn.addEventListener("click", () => {
+      const errorEl = document.getElementById("login-error");
+      try {
+        api.loginApple();
+      } catch (err) {
+        if (errorEl) {
+          errorEl.textContent = err?.message || "Could not start Apple sign in.";
+          errorEl.style.display = "block";
+        }
       }
-    }
-  });
+    });
+  }
 
   // Close dropdown when clicking outside
   document.addEventListener("click", (e) => {
