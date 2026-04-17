@@ -281,6 +281,7 @@ export const api = {
     request("PUT", "/api/portfolio/slug", { slug, ...options }),
   getSlugSuggestions: (slug) =>
     request("GET", `/api/portfolio/slug/suggestions?slug=${encodeURIComponent(slug)}`),
+  getPortfolioInsights: () => request("GET", "/api/portfolio/insights"),
 
   /** Support / payments (PayNow MVP) */
   logPaynowSupport: (amount, currency = "SGD") =>

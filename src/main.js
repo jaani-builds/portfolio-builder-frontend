@@ -238,14 +238,73 @@ function stepEl(label, targetPath, isActive) {
   return `<button class="step ${isActive ? "active" : ""}" data-path="${targetPath}">${label}</button>`;
 }
 
+function metric(value = 0) {
+  return Number(value || 0).toLocaleString();
+}
+
+function renderInsightsCards(payload) {
+  const insights = payload?.insights;
+  const analytics = payload?.analytics;
+
+  if (!insights) {
+    return `
+      <section class="home-insights home-insights--empty">
+        <h3>Portfolio Health</h3>
+        <p>Upload a resume to generate your health score, missing checklist, and analytics dashboard.</p>
+      </section>
+    `;
+  }
+
+  const score = Number(insights.score || 0);
+  const required = insights?.checklist?.required || [];
+  const recommended = insights?.checklist?.recommended || [];
+  const topChecklist = [...required, ...recommended].slice(0, 5);
+  const totals = analytics?.totals || {};
+
+  return `
+    <section class="home-insights">
+      <article class="home-insight-card home-insight-card--score">
+        <p class="home-insight-kicker">Portfolio Health Score</p>
+        <div class="home-score-wrap">
+          <div class="home-score-value">${score}</div>
+          <div class="home-score-meta">
+            <div class="home-score-grade">Grade ${escapeHtml(insights.grade || "-")}</div>
+            <div class="home-score-caption">Rule-based readiness score</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="home-insight-card">
+        <p class="home-insight-kicker">Missing Info Checklist</p>
+        ${topChecklist.length ? `
+          <ul class="home-checklist">
+            ${topChecklist.map((item) => `<li>${escapeHtml(item.label || "")}</li>`).join("")}
+          </ul>
+        ` : `<p class="home-insight-empty">No major gaps detected. Great job.</p>`}
+      </article>
+
+      <article class="home-insight-card">
+        <p class="home-insight-kicker">Analytics (Last 30 Days)</p>
+        <div class="home-metrics-grid">
+          <div><span>Views</span><strong>${metric(totals.views)}</strong></div>
+          <div><span>Unique Visitors</span><strong>${metric(totals.unique_visitors)}</strong></div>
+          <div><span>PDF Clicks</span><strong>${metric(totals.pdf_click)}</strong></div>
+          <div><span>Profile Clicks</span><strong>${metric((totals.linkedin_click || 0) + (totals.github_click || 0))}</strong></div>
+        </div>
+      </article>
+    </section>
+  `;
+}
+
 async function renderDashboard(path) {
   const topbar = renderTopbar(currentUser);
 
   // Homepage: single card, one unified workflow.
   if (path === ROUTES.dashboard || path === `${ROUTES.dashboard}/`) {
-    const [resume, slugData] = await Promise.all([
+    const [resume, slugData, insightsPayload] = await Promise.all([
       api.getResume().catch(() => null),
       api.getSlug().catch(() => ({ slug: null })),
+      api.getPortfolioInsights().catch(() => null),
     ]);
 
     const liveUrl = slugData.slug ? `${api.publicOrigin()}/${slugData.slug}/` : null;
@@ -267,6 +326,8 @@ async function renderDashboard(path) {
               <button id="btn-home-workflow" class="home-card__action">${resume ? "Open Update Workflow" : "Start Publishing"}</button>
             </article>
           </div>
+
+          ${renderInsightsCards(insightsPayload)}
 
           ${safeLiveUrl ? `
             <div class="home-live-url">

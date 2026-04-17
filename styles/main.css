@@ -396,6 +396,101 @@ textarea.code {
   color: #7ecbff;
 }
 
+.home-insights {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.home-insights--empty {
+  margin-top: 1rem;
+  border: 1px solid #2a3346;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #121b2a 0%, #1b2538 100%);
+  padding: 1rem;
+}
+
+.home-insight-card {
+  border: 1px solid #2a3346;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #121b2a 0%, #1b2538 100%);
+  padding: 1rem;
+}
+
+.home-insight-kicker {
+  margin: 0 0 .75rem;
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: #a8afbe;
+}
+
+.home-score-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: .8rem;
+}
+
+.home-score-value {
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #7ecbff;
+}
+
+.home-score-grade {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #e4e6eb;
+}
+
+.home-score-caption {
+  margin-top: .15rem;
+  font-size: .82rem;
+  color: #a8afbe;
+}
+
+.home-checklist {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: .35rem;
+  color: #d1d7e3;
+  font-size: .9rem;
+}
+
+.home-insight-empty {
+  margin: 0;
+  font-size: .9rem;
+  color: #a8afbe;
+}
+
+.home-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .65rem;
+}
+
+.home-metrics-grid div {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid #2a3346;
+  border-radius: 7px;
+  padding: .5rem .6rem;
+  display: grid;
+  gap: .15rem;
+}
+
+.home-metrics-grid span {
+  color: #a8afbe;
+  font-size: .78rem;
+}
+
+.home-metrics-grid strong {
+  color: #e4e6eb;
+  font-size: 1rem;
+}
+
 
 /* ── Slug preview ─────────────────────────────────────────────────────────── */
 .slug-preview {
@@ -985,6 +1080,7 @@ details[open] > .acc__hd::after { transform: rotate(90deg); }
   .json-summary dl { grid-template-columns: 1fr; }
   .home-shell { padding: 1.25rem; }
   .home-cards { grid-template-columns: 1fr; }
+  .home-insights { grid-template-columns: 1fr; }
   .home-card p { min-height: auto; }
   .support-panel { padding: .95rem 1rem; }
   .support-inline { justify-content: flex-start; }
