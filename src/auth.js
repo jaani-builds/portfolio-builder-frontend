@@ -35,8 +35,6 @@ export function renderLogin(app) {
                 </svg>
                 LinkedIn
               </button>
-              <!-- Apple: enable once credentials are configured -->
-              <!-- <button class="oauth-option" id="btn-apple" type="button">Apple</button> -->
             </div>
           </div>
         </div>
@@ -108,21 +106,6 @@ export function renderLogin(app) {
       } catch (err) {
         if (errorEl) {
           errorEl.textContent = err?.message || "Could not start LinkedIn sign in.";
-          errorEl.style.display = "block";
-        }
-      }
-    });
-  }
-
-  const appleBtn = document.getElementById("btn-apple");
-  if (appleBtn) {
-    appleBtn.addEventListener("click", () => {
-      const errorEl = document.getElementById("login-error");
-      try {
-        api.loginApple();
-      } catch (err) {
-        if (errorEl) {
-          errorEl.textContent = err?.message || "Could not start Apple sign in.";
           errorEl.style.display = "block";
         }
       }

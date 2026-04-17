@@ -7,6 +7,17 @@ const escapeHtml = (v = "") =>
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 
+function safeHttpUrl(value) {
+  if (!value) return "";
+  try {
+    const parsed = new URL(String(value), window.location.origin);
+    if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+      return parsed.toString();
+    }
+  } catch {}
+  return "";
+}
+
 function normalizePdfUrl(url = "") {
   if (!url) return "";
   try {
@@ -34,6 +45,9 @@ function renderParsedSummary(data) {
   const skills = data?.skills ?? {};
   const certs = data?.certifications ?? [];
 
+  const linkedinUrl = safeHttpUrl(b.linkedin);
+  const githubUrl = safeHttpUrl(b.github);
+
   return `
     <div class="json-summary">
       <dl>
@@ -42,8 +56,8 @@ function renderParsedSummary(data) {
         <dt>Email</dt>      <dd>${escapeHtml(b.email || "—")}</dd>
         <dt>Phone</dt>      <dd>${escapeHtml(b.phone || "—")}</dd>
         <dt>Location</dt>   <dd>${escapeHtml(b.location || "—")}</dd>
-        <dt>LinkedIn</dt>   <dd>${b.linkedin ? `<a href="${escapeHtml(b.linkedin)}" target="_blank" rel="noopener">${escapeHtml(b.linkedin)}</a>` : "—"}</dd>
-        <dt>GitHub</dt>     <dd>${b.github ? `<a href="${escapeHtml(b.github)}" target="_blank" rel="noopener">${escapeHtml(b.github)}</a>` : "—"}</dd>
+        <dt>LinkedIn</dt>   <dd>${linkedinUrl ? `<a href="${escapeHtml(linkedinUrl)}" target="_blank" rel="noopener">${escapeHtml(linkedinUrl)}</a>` : "—"}</dd>
+        <dt>GitHub</dt>     <dd>${githubUrl ? `<a href="${escapeHtml(githubUrl)}" target="_blank" rel="noopener">${escapeHtml(githubUrl)}</a>` : "—"}</dd>
         <dt>Experience</dt> <dd>${exp.length} role${exp.length === 1 ? "" : "s"} detected</dd>
         <dt>Education</dt>  <dd>${edu.length} entr${edu.length === 1 ? "y" : "ies"} detected</dd>
         <dt>Skill groups</dt><dd>${Object.keys(skills).length}</dd>
@@ -54,8 +68,9 @@ function renderParsedSummary(data) {
 }
 
 function renderPdfStatus(url, prefix = "PDF attached") {
-  if (!url) return "";
-  return `${escapeHtml(prefix)}: <a href="${escapeHtml(url)}" target="_blank" rel="noopener">View PDF</a>`;
+  const safeUrl = safeHttpUrl(url);
+  if (!safeUrl) return escapeHtml(prefix);
+  return `${escapeHtml(prefix)}: <a href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener">View PDF</a>`;
 }
 
 function formatSection(value) {

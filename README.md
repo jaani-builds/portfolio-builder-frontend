@@ -8,7 +8,7 @@ Recommended production hosting:
 - Backend on AWS Lambda + API Gateway
 
 Responsibilities:
-- GitHub OAuth login screen
+- OAuth login screen (GitHub, Google, LinkedIn)
 - Resume upload and parse workflow
 - Slug selection and publish flow
 - Session token storage and API communication
@@ -17,7 +17,10 @@ Responsibilities:
 
 This frontend talks to the backend API at `http://localhost:8000` by default.
 
-- Login redirect target: `GET /api/auth/github`
+- Login redirect targets:
+	- `GET /api/auth/github`
+	- `GET /api/auth/google`
+	- `GET /api/auth/linkedin`
 - Exchange callback flow: `GET /api/auth/exchange`
 - Resume + slug management routes under `/api/resume` and `/api/portfolio`
 
@@ -31,7 +34,7 @@ For production, the API base is:
 
 The backend is expected to be configured with AWS-native services:
 
-- Auth via GitHub OAuth
+- Auth via OAuth providers (GitHub, Google, LinkedIn)
 - Storage via Amazon S3
 - Metadata via DynamoDB
 

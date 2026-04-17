@@ -3,8 +3,13 @@
  * Token is stored in sessionStorage under the key "pb_token".
  */
 
+function isLocalHostname(hostname) {
+  return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "0.0.0.0";
+}
+
 const queryApiBase = (() => {
   try {
+    if (!isLocalHostname(window.location.hostname)) return null;
     return new URLSearchParams(window.location.search).get("apiBase");
   } catch {
     return null;
@@ -37,10 +42,6 @@ const BASE = normalizeBase(
   queryApiBase || runtimeApiBase || import.meta?.env?.VITE_API_URL || defaultApiBase()
 );
 const hasExplicitApiBase = Boolean(queryApiBase || runtimeApiBase || import.meta?.env?.VITE_API_URL);
-
-function isLocalHostname(hostname) {
-  return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "0.0.0.0";
-}
 
 function shouldBlockUnconfiguredProdOAuth(base) {
   let appHost = "";
@@ -131,7 +132,9 @@ function derivedPublicOriginFromApi() {
 const TOKEN_KEY = "pb_token";
 
 export const auth = {
-  set: (token) => sessionStorage.setItem(TOKEN_KEY, token),
+  set: (token) => {
+    if (token) sessionStorage.setItem(TOKEN_KEY, token);
+  },
   get: () => sessionStorage.getItem(TOKEN_KEY),
   clear: () => sessionStorage.removeItem(TOKEN_KEY),
 };
@@ -149,6 +152,7 @@ async function request(method, path, body = undefined) {
       res = await fetch(`${base}${path}`, {
         method,
         headers,
+        credentials: "include",
         body: body !== undefined ? JSON.stringify(body) : undefined,
       });
       activeBase = base;
@@ -202,6 +206,7 @@ async function requestFormData(method, path, formData) {
       res = await fetch(`${base}${path}`, {
         method,
         headers,
+        credentials: "include",
         body: formData,
       });
       activeBase = base;
@@ -305,14 +310,6 @@ export const api = {
       );
     }
     window.location.href = `${activeBase}/api/auth/linkedin`;
-  },
-  loginApple: () => {
-    if (shouldBlockUnconfiguredProdOAuth(activeBase)) {
-      throw new Error(
-        "API base is not configured for production. Open this app using ?apiBase=<your-api-url> or set window.__PB_API_BASE__ in config.js."
-      );
-    }
-    window.location.href = `${activeBase}/api/auth/apple`;
   },
 
   /** Public URL helpers */

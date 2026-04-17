@@ -22,6 +22,25 @@ const ROUTES = {
   slug: "/dashboard/slug",
 };
 
+const escapeHtml = (v = "") =>
+  String(v)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+
+function safeHttpUrl(value) {
+  if (!value) return "";
+  try {
+    const parsed = new URL(String(value), window.location.origin);
+    if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+      return parsed.toString();
+    }
+  } catch {}
+  return "";
+}
+
 function getDashboardStep(path) {
   if (path.includes("/slug") || path.includes("/done")) return "slug";
   return "upload";
@@ -32,15 +51,17 @@ function getDashboardStep(path) {
 let currentUser = null;
 
 function renderTopbar(user) {
+  const displayName = escapeHtml(user.name || user.email || "Account");
+  const safeAvatar = safeHttpUrl(user.avatar_url);
   return `
     <nav class="topbar">
       <a class="topbar__brand" href="#/dashboard">Portfolio Builder</a>
       <div class="topbar__user">
         <button id="btn-support-topbar" class="btn btn--support-topbar" title="Support this project" aria-label="Support this project">💛</button>
-        ${user.avatar_url
-          ? `<img class="topbar__avatar" src="${user.avatar_url}" alt="${user.name}" />`
+        ${safeAvatar
+          ? `<img class="topbar__avatar" src="${escapeHtml(safeAvatar)}" alt="${displayName}" />`
           : ""}
-        <span>${user.name || user.email || "Account"}</span>
+        <span>${displayName}</span>
         <button id="btn-signout" class="btn btn--ghost">Sign out</button>
       </div>
     </nav>
@@ -153,8 +174,8 @@ async function handleCallbackCode() {
   const match = raw.match(/[?&]code=([^&]+)/);
   if (!match) { navigate(ROUTES.login); return true; }
   try {
-    const { token } = await api.exchangeCode(decodeURIComponent(match[1]));
-    auth.set(token);
+    await api.exchangeCode(decodeURIComponent(match[1]));
+    auth.clear();
   } catch {
     navigate(ROUTES.login);
     return true;
@@ -177,27 +198,24 @@ async function route() {
   if (await handleCallbackCode()) return;
 
   const path = currentPath();
-  const token = auth.get();
 
-  // Public routes
-  if (!token || path === ROUTES.login) {
-    if (token && path === ROUTES.root) {
-      navigate(ROUTES.dashboard);
-      return;
-    }
-    renderLogin(app);
-    return;
-  }
-
-  // Fetch user if we don't have it yet
   if (!currentUser) {
     try {
       currentUser = await api.me();
     } catch {
       auth.clear();
-      renderLogin(app);
-      return;
+      currentUser = null;
     }
+  }
+
+  if (!currentUser) {
+    renderLogin(app);
+    return;
+  }
+
+  if (path === ROUTES.login) {
+    navigate(ROUTES.dashboard);
+    return;
   }
 
   if (path === ROUTES.root || path === "") {
@@ -231,13 +249,15 @@ async function renderDashboard(path) {
     ]);
 
     const liveUrl = slugData.slug ? `${api.publicOrigin()}/${slugData.slug}/` : null;
+    const safeLiveUrl = safeHttpUrl(liveUrl);
+    const safeCurrentUserName = escapeHtml(currentUser.name || "there");
 
     app.innerHTML = `
       ${topbar}
       <div class="dashboard dashboard-home">
         <div class="home-shell">
           <p class="home-kicker">Dashboard</p>
-          <h2 class="home-title">Welcome back, ${currentUser.name || "there"}</h2>
+          <h2 class="home-title">Welcome back, ${safeCurrentUserName}</h2>
           <p class="home-subtitle">Use one workflow to publish your first resume or update your existing one.</p>
 
           <div class="home-cards">
@@ -248,10 +268,10 @@ async function renderDashboard(path) {
             </article>
           </div>
 
-          ${liveUrl ? `
+          ${safeLiveUrl ? `
             <div class="home-live-url">
               <span>Your portfolio is live:</span>
-              <a href="${liveUrl}" target="_blank" rel="noopener">${liveUrl}</a>
+              <a href="${escapeHtml(safeLiveUrl)}" target="_blank" rel="noopener">${escapeHtml(safeLiveUrl)}</a>
             </div>
           ` : ""}
         </div>
